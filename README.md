@@ -1,0 +1,108 @@
+# 📅 PassMaker
+멘토와의 1:1 화상 멘토링 및 멘토링 내용 AI 요약 서비스
+
+---
+
+## 🧾 프로젝트 개요
+- 프로젝트명: PassMaker
+- 개발 기간: 2025년 7월 4일 ~ (진행 중)
+- 플랫폼: 웹 (※ 모바일 반응형은 추후 적용 예정)
+
+---
+
+## 🎯 목표
+직무 선택과 커리어 고민에 직면한 사람들을 위해, 다양한 분야의 전문가(멘토)와 1:1로 연결되어
+실시간 멘토링을 예약하고 진행할 수 있는 직무 기반 화상 멘토링 예약 플랫폼을 제공합니다.
+
+멘토는 전문성 검증 및 승인을 거친 유저만 등록되며, 멘티는 멘토의 공개된 일정 중 원하는 시간을 선택해
+1시간 단위의 실시간 멘토링을 요청할 수 있습니다. WebRTC를 통한 실시간 화상 대화를 지원하며, 멘토링 도중 AI가 음성을 텍스트로 변환하고,
+세션 종료 후 AI 기반 요약으로 회고와 인사이트를 제공합니다.
+
+---
+
+# 📁 프로젝트 구조
+
+```
+📦 root
+├── backend                  # 💡 Spring Boot 기반 백엔드 서버
+│   ├── build.gradle         # Gradle 빌드 설정
+│   ├── settings.gradle      # 프로젝트 설정
+│   ├── src/
+│   │   └── main/
+│   │       └── java/org/example/backend
+│   │           ├── BackendApplication.java      # 🎯 메인 엔트리 포인트
+│   │           ├── config/                      # 🔐 Spring Security, Web 설정
+│   │           ├── domain/                      # 📦 도메인 엔티티 및 JPA 모델
+│   │           ├── repository/                  # 🗃️ 데이터 접근 레이어 (JPA Repository)
+│   │           ├── controller/                  # 📮 REST API 엔드포인트
+│   │           ├── service/                     # ⚙️ 핵심 비즈니스 로직
+│   │           └── dto/                         # 📦 요청/응답용 DTO 클래스들
+│
+├── frontend                # 💻 React 기반 프론트엔드
+│   ├── public/             # 🌐 정적 파일 (favicon, html 등)
+│   └── src/
+│       ├── apis/           # 🔗 API 통신 모듈 (Axios 등)
+│       ├── components/     # 🧩 재사용 가능한 공통 컴포넌트
+│       ├── pages/          # 📄 페이지 단위 UI
+│       ├── styles/         # 🎨 전역 CSS 및 Tailwind 설정
+│       └── utils/          # 🛠️ 공통 유틸 함수
+
+
+```
+
+## 📄 프로젝트 문서
+
+| 문서 종류            | 링크                                                                 |
+|---------------------|----------------------------------------------------------------------|
+| 📝 프로젝트 기획 문서 (Notion) | [📎 바로가기](https://super-bridge-61f.notion.site/PassMaker-21f54de8ddbb8045a8c9ea72f190cd1b?source=copy_link) |
+
+---
+
+## 👤 멤버 소개
+
+| Github | [<img src="https://avatars.githubusercontent.com/DDongHyun00" width="100"/>](https://github.com/DDongHyun00) | [<img src="https://avatars.githubusercontent.com/PangDDoA" width="100"/>](https://github.com/PangDDoA) | [<img src="https://avatars.githubusercontent.com/yubeen777" width="100"/>](https://github.com/yubeen777) | [<img src="https://avatars.githubusercontent.com/eunsujang3028" width="100"/>](https://github.com/eunsujang3028) |
+|--------|--------------------|--------------------|----------------------|--------------------------|
+| **이름** | 김동현 | 정대현 | 장유빈 | 장은수 |
+| **담당** | 팀장 | BackEnd | BackEnd | Front |
+
+
+---
+
+## 📑 프로젝트 규칙
+
+### Branch Strategy
+> - main / dev / 브랜치 기본 생성 
+
+### Git Convention
+> 1. 적절한 커밋 접두사 작성
+> 2. 커밋 메시지 내용 작성
+> 3. 내용 뒤에 이슈 (#이슈 번호)와 같이 작성하여 이슈 연결
+
+### Pull Request
+> ### Title
+> * 제목은 '[Feat] 홈 페이지 구현'과 같이 작성합니다.
+
+> ### PR Type
+  > - [ ] FEAT: 새로운 기능 구현
+  > - [ ] FIX: 버그 수정
+  > - [ ] DOCS: 문서 수정
+  > - [ ] STYLE: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우
+  > - [ ] REFACTOR: 코드 리펙토링
+  > - [ ] CHORE: 빌드 업무 수정, 패키지 매니저 수정
+
+### Code Convention
+>BE
+> - 패키지명 전체 소문자
+> - 클래스명, CamelCase
+> - 클래스 이름 명사 사용
+
+
+> FE
+> - 클래스명, CamelCase
+> - Event handler 사용 (ex. handle ~)
+> - export방식 (ex. export default ~)
+> - 화살표 함수 사용
+
+
+### Communication Rules
+> - Notion 활용
