@@ -1,0 +1,100 @@
+# ========================
+# 🧩 IDE 설정 (IntelliJ, VSCode)
+# ========================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.factorypath
+.settings/
+.sts4-cache/
+.springBeans
+
+# ========================
+# ⚙️ 빌드 & 캐시 디렉토리 (Spring + Gradle)
+# ========================
+**/build/
+**/.gradle/
+**/out/
+**/target/
+test-output/
+test-results/
+
+# ========================
+# 🧪 로그 & 민감 정보
+# ========================
+*.log
+*.tmp
+*.token
+*.jwt
+*.key
+*.h2.db
+*.mv.db
+*.db
+.DS_Store
+Thumbs.db
+
+# ========================`
+# 🔐 환경변수 & 시크릿 설정
+# (Spring + React + 서버 배포 환경 통합)
+# ========================
+.env
+*.env.local
+*.env.*.local
+backend/src/main/resources/application-secret.*
+backend/src/main/resources/application-*.secret.*
+backend/src/main/resources/*-secret.properties
+
+# ========================
+# 💻 Java / Spring Boot 전용
+# ========================
+*.class
+HELP.md
+
+# ========================
+# ⚛️ React (Vite)
+# ========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ========================
+# 🐳 Docker & 빌드 이미지 관련
+# ========================
+**/Dockerfile
+docker-compose.yml
+**/.dockerignore
+
+## Docker 빌드 결과와 임시 데이터는 무시
+#volume/
+#tmp/
+#**/tmp/
+#**/volume/
+## Docker 컨테이너에서 생성되는 로그나 파일
+#*.log
+
+
+# ========================
+# 📦 패키지 매니저 로그
+# ========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ========================
+# 🔁 GitHub Actions
+# ========================
+.github/workflows/*.yml.bak
+deploy.log
+
+# ========================
+# 🔍 기타 툴 캐시
+# ========================
+.sass-cache/
+.cache/
+.next/
+.nuxt/
