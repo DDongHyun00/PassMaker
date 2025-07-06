@@ -20,10 +20,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // REST API에선 CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // 회원가입/로그인 허용
-                        .requestMatchers("/oauth/**").permitAll()
-                        .anyRequest().authenticated())               // 그 외는 인증 필요
+                        .anyRequest().permitAll()) //  모든 요청 허용 (임시 테스트용)
+//                        .requestMatchers("/", "/favicon.ico").permitAll()
+//                        .requestMatchers("/api/auth/**").permitAll() // 회원가입/로그인 허용
+//                        .requestMatchers("/oauth/**").permitAll()
+//                        .anyRequest().authenticated())               // 그 외는 인증 필요
                 // .addFilterBefore(내필터, 기준이되는기존필터.class) - 기준 필터 전에 내 필터를 먼저 실행, Username~Filter는 스프링 시큐리티자체에서 로그인에 사용하는 기본필터
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
