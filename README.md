@@ -23,7 +23,6 @@
 # 📁 프로젝트 구조
 
 ```
-
 📦 root/
 ├── backend/                            # 🌱 Spring Boot 기반 백엔드 서버
 │   └── src/
@@ -61,9 +60,6 @@
 │       ├── routes/                  # 🔀 라우팅 설정
 │       ├── styles/                  # 🎨 CSS, Tailwind 스타일
 │       └── user/                    # 🙍‍♂️ 유저 정보 관련 페이지
-
-
-
 ```
 
 ## 📄 프로젝트 문서
