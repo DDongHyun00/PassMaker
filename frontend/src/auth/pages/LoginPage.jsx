@@ -1,8 +1,8 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../lib/axios";
-import CenterWrapper from "../styles/CenterWrapper.jsx";
+import axios from "../../common/lib/axios.js";
+import CenterWrapper from "../../common/styles/CenterWrapper.jsx";
 
 const LoginPage = () => {
   const navigate = useNavigate();

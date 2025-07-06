@@ -2,7 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import CenterWrapper from "../styles/CenterWrapper.jsx";
-import logo from '../assets/PassMakerLogo.webp';
+import logo from '../../assets/PassMakerLogo.webp';
 
 
 

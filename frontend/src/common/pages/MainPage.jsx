@@ -1,6 +1,6 @@
 // src/pages/MainPage.jsx
 import React from "react";
-import axios from "../lib/axios";
+import axios from "../lib/axios.js";
 import CenterWrapper from "../styles/CenterWrapper.jsx";
 import { useNavigate } from "react-router-dom";
 
