@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "../lib/axios.js";
+import axios from "../../common/lib/axios.js";
 import { useNavigate } from "react-router-dom";
-import CenterWrapper from "../styles/CenterWrapper.jsx";
+import CenterWrapper from "../../common/styles/CenterWrapper.jsx";
 
 // 컴포넌트 정의
 const SignupPage = () => {
