@@ -23,35 +23,45 @@
 # 📁 프로젝트 구조
 
 ```
-📦 root
-├── backend/                             # 🌱 Spring Boot 기반 백엔드 서버
-│   ├── build.gradle                     # ⚙️ Gradle 빌드 설정
-│   ├── settings.gradle                  # ⚙️ 프로젝트 설정
+
+📦 root/
+├── backend/                            # 🌱 Spring Boot 기반 백엔드 서버
 │   └── src/
 │       └── main/
 │           ├── java/org/example/backend/
-│           │   ├── BackendApplication.java      # 🎯 메인 엔트리 포인트
-│           │   ├── admin/                       # 🛠️ 관리자 기능 (멘토 승인, 통계 등)
-│           │   ├── auth/                        # 🔐 인증/인가 (JWT, OAuth2 등)
-│           │   ├── common/                      # 🧱 공통 상수, 응답 포맷, 예외 처리 등
-│           │   ├── config/                      # ⚙️ Spring 설정 (시큐리티, CORS 등)
-│           │   ├── external/                    # 🌐 외부 API 연동 (Toss, GPT 등)
-│           │   ├── mentor/                      # 👨‍🏫 멘토 신청, 정보 관리
-│           │   ├── payment/                     # 💳 결제 처리 및 환불
-│           │   ├── reservation/                 # 📅 멘토링 예약 관리
-│           │   ├── review/                      # 📝 멘토링 리뷰 작성
-│           │   ├── room/                        # 🎥 화상 면접방 생성/입장
-│           │   └── user/                        # 🙋‍♂️ 유저 (회원가입, 소셜 로그인 등)
-│           └── resources/                       # 📄 application.yml 등 설정 파일
+│           │   ├── BackendApplication.java     # 🎯 메인 엔트리 포인트
+│           │   ├── admin/                      # 🧑‍💼 관리자 기능 (멘토 승인, 통계 등)
+│           │   ├── auth/                       # 🔐 인증/인가 (JWT, OAuth2 등)
+│           │   ├── common/                     # ⚒️ 공통 상수, 응답 포맷, 예외 처리 등
+│           │   ├── config/                     # ⚙️ Spring 설정 (시큐리티, CORS 등)
+│           │   ├── external/                   # 🌐 외부 API 연동 (Toss, GPT 등)
+│           │   ├── mentor/                     # 🙋‍♂️ 멘토 신청, 정보 관리
+│           │   ├── payment/                    # 💳 결제 처리 및 환불
+│           │   ├── reservation/                # 📅 멘토링 예약 관리
+│           │   ├── review/                     # 📝 멘토링 리뷰 작성
+│           │   ├── room/                       # 🎥 화상 면접방 생성/입장
+│           │   └── user/                       # 🙍‍♂️ 유저 (회원가입, 소셜 로그인 등)
+│           └── resources/
+│               └── application.yml             # 📄 설정 파일
 │
-├── frontend/                            # 💻 React 기반 프론트엔드
-│   ├── public/                          # 🌐 정적 파일 (favicon, html 등)
+├── frontend/                          # 💻 React 기반 프론트엔드
+│   ├── public/                        # 🌐 정적 파일 (favicon, html 등)
 │   └── src/
-│       ├── apis/                        # 🔗 API 통신 모듈 (Axios)
-│       ├── components/                 # 🧩 공통 UI 컴포넌트
-│       ├── pages/                      # 📄 라우팅 단위 페이지
-│       ├── styles/                     # 🎨 CSS, Tailwind 설정
-│       └── utils/                      # 🛠️ 공통 유틸 함수
+│       ├── admin/                    # 🧑‍💼 관리자 전용 UI
+│       ├── assets/                  # 🖼️ 이미지, 아이콘 등 정적 리소스
+│       ├── auth/                    # 🔐 로그인, 회원가입 등 인증 관련
+│       ├── common/                  # ⚒️ 공통 모듈
+│       │   ├── api/                 # 📡 Axios 등 API 통신
+│       │   ├── lib/                 # 🧠 유틸 함수 모음 (e.g. axios.js)
+│       │   └── pages/
+│       ├── mentor/                  # 🙋‍♂️ 멘토 관련 (신청, 정보 관리 등)
+│       ├── reservation/             # 📅 예약 UI 및 기능
+│       ├── review/                  # 📝 리뷰 화면
+│       ├── room/                    # 🎥 실시간 면접방 관련 UI
+│       ├── routes/                  # 🔀 라우팅 설정
+│       ├── styles/                  # 🎨 CSS, Tailwind 스타일
+│       └── user/                    # 🙍‍♂️ 유저 정보 관련 페이지
+
 
 
 ```
