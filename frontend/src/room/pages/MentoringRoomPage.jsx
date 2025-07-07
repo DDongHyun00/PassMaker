@@ -4,7 +4,7 @@ import VideoArea from '../components/VideoArea.jsx';
 import MentoringPreparation from '../components/MentoringPreparation.jsx';
 
 const MentoringRoomPage = () => {
-  const [timer, setTimer] = useState(4985); // 01:23:05 in seconds
+  const [timer, setTimer] = useState(0); // 타이머 00:00:00 부터 시작
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
   const [internetConnected, setInternetConnected] = useState(true);

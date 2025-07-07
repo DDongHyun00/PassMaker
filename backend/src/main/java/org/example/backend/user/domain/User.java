@@ -6,6 +6,7 @@ import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.mentor.domain.MentorApply;
 import org.example.backend.mentor.domain.MentorUser;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class User extends BaseTimeEntity {
     private String thumbnail;
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     private boolean isMentor;
 
     @Column(nullable = false)

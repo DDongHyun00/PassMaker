@@ -41,7 +41,7 @@ const MentoringHeader = () => {
             onClick={handleShare}
             className="px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors font-medium"
           >
-            회원 공유
+            화면 공유
           </button>
           
           <button 
