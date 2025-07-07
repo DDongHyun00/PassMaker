@@ -12,6 +12,7 @@ import org.example.backend.auth.domain.Refresh;
 import org.example.backend.auth.domain.SocialType;
 import org.example.backend.auth.domain.TokenBlacklist;
 import org.example.backend.config.jwt.JwtTokenProvider;
+import org.example.backend.user.domain.Role;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.dto.Google.GoogleUserDto;
 import org.example.backend.auth.repository.OAuthUserRepository;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @RequiredArgsConstructor
@@ -62,6 +64,8 @@ public class OAuthServiceImplGoogle implements OAuthService {
                             .email(googleUser.getEmail())
                             .password(null)
                             .name(googleUser.getName())
+                            .role(Role.USER)
+                            .nickname(generateNickname(googleUser.getName()))
                             .build();
                     userRepository.save(newUser);
 
@@ -96,6 +100,11 @@ public class OAuthServiceImplGoogle implements OAuthService {
         log.info("[Google Access/Refresj 토큰 발급 성공] : AccessToken="+accessToken + " refreshToken="+refreshToken);
         log.info("[Google Login] 성공적으로 로그인 처리됨");
     }
+
+    private String generateNickname(String name) {  // 구글 닉네임 없을시 닉네임 생성
+        return name + "_" + UUID.randomUUID().toString().substring(0, 6);
+    }
+
 
     private void setTokenCookie(HttpServletResponse response, String name, String token) {
         Cookie cookie = new Cookie(name, token);
