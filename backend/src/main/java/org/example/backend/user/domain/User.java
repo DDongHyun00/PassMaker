@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phone;
 
     @Column(nullable = false, unique = true)
