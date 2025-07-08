@@ -8,6 +8,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
+// CORS 설정 config
 @Configuration
 public class WebConfig {
 
