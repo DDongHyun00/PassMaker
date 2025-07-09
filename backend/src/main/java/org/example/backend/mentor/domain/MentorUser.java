@@ -6,6 +6,9 @@ import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.user.domain.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -27,4 +30,10 @@ public class MentorUser extends BaseTimeEntity {
 
     @Column(length = 255)
     private String intro;
+
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Field> fields = new ArrayList<>();
+
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Career> careers = new ArrayList<>();
 }
