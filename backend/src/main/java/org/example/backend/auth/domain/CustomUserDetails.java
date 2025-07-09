@@ -20,6 +20,12 @@ public class CustomUserDetails implements UserDetails {
         // 예: user.getRole() → USER → ROLE_USER
     }
 
+
+    // TODO: 테스트용으로 추가한 메서드입니다.
+    // ReservationController에서 @AuthenticationPrincipal 기반으로 userId 추출을 쉽게 하기 위해 임시 작성
+    // 추후 로그인 인증 흐름과 병합 시 유지 여부 검토 필요
+    public Long getUserId() { return user.getUserId(); }
+
     @Override
     public String getPassword() {
         return user.getPassword(); // 소셜 로그인은 null일 수 있음
@@ -53,4 +59,6 @@ public class CustomUserDetails implements UserDetails {
     public User getUser() {
         return user;
     }
+
+
 }

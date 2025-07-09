@@ -5,6 +5,7 @@ import org.example.backend.config.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,19 +18,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // REST API에선 CSRF 비활성화
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()) //  모든 요청 허용 (임시 테스트용)
-//                        .requestMatchers("/", "/favicon.ico").permitAll()
-//                        .requestMatchers("/api/auth/**").permitAll() // 회원가입/로그인 허용
-//                        .requestMatchers("/oauth/**").permitAll()
-//                        .anyRequest().authenticated())               // 그 외는 인증 필요
-                // .addFilterBefore(내필터, 기준이되는기존필터.class) - 기준 필터 전에 내 필터를 먼저 실행, Username~Filter는 스프링 시큐리티자체에서 로그인에 사용하는 기본필터
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/reservations/**").authenticated()
+                .anyRequest().permitAll()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // ✅ 이거 중요!
+            .build();
 
-
-        return http.build();
     }
 
     @Bean
