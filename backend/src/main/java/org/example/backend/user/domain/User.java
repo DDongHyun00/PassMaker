@@ -46,6 +46,7 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
 
+
     // === 연관 관계 ===
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -53,5 +54,14 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<MentorApply> mentorApplications;
+
+
+    // TODO: 테스트용으로 추가한 메서드입니다.
+    // Reservation 기능 개발 중 @AuthenticationPrincipal(CustomUserDetails)로부터 userId 추출을 위해 임시 작성
+    // 추후 로그인/인증 구현자와 병합 시 유지 여부 협의 필요
+    public Long getUserId() {
+        return this.id;
+    }
+
 
 }
