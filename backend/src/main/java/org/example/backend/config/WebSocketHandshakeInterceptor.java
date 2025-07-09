@@ -1,7 +1,9 @@
 package org.example.backend.config;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.backend.config.jwt.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -37,7 +39,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
                 return true;
             }
         }
-
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return false; // 인증 실패 → WebSocket 연결 거부
     }
 
@@ -48,11 +50,14 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        // 예: Authorization: Bearer eyJ...
-        String bearer = request.getHeader("Authorization");
-        if (bearer != null && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("AccessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
         return null;
     }
+
 }

@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InterviewRecord {
+public class MentoringRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,7 @@ public class InterviewRecord {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
-    private InterviewRoom room;
+    private MentoringRoom room;
 
     @Lob
     private String sttText;
