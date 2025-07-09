@@ -54,7 +54,7 @@ public class OAuthKakaoController {
         kakaoOAuthService.login(accessToken, response);
         log.info("카카오 로그인 성공: backend");
 
-        response.sendRedirect("http://localhost:5173/main");
+        response.sendRedirect("http://localhost:5173/");
     }
 
     @Value("${KAKAO_CLIENT_ID}")
