@@ -40,6 +40,14 @@ public class MentoringReservation extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
+    public void approve() {
+        this.status = ReservationStatus.ACCEPT;
+    }
+
+    public void reject() {
+        this.status = ReservationStatus.REJECT;
+    }
 }
 
 //    | 개념                        | 설명                                |
