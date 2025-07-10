@@ -1,6 +1,7 @@
 package org.example.backend.reservation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
 import org.example.backend.reservation.dto.ReservationRequestDto;
 import org.example.backend.reservation.dto.ReservationResponseDto;
 import org.example.backend.reservation.service.ReservationService;
@@ -23,6 +24,12 @@ public class ReservationController {
   ) {
     Long userId = userDetails.getUserId(); // JWT에서 추출된 사용자 ID
     ReservationResponseDto response = reservationService.createReservation(requestDto, userId);
-    return ResponseEntity.ok(response);//✅ 예약 완료 응답 반환
+    return ResponseEntity.ok(response);//예약 완료 응답 반환
+  }
+
+  @PatchMapping("/{reservationId}/approve")
+  public ResponseEntity<ApproveReservationResponseDTO> approve(@PathVariable Long reservationId) {
+    ApproveReservationResponseDTO response = reservationService.approveReservationResponse(reservationId);
+    return ResponseEntity.ok(response);
   }
 }
