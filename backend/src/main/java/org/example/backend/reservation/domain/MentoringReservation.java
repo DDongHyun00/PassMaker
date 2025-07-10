@@ -40,4 +40,21 @@ public class MentoringReservation extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
+    public void approve() {
+        this.status = ReservationStatus.ACCEPT;
+    }
+
+    public void reject() {
+        this.status = ReservationStatus.REJECT;
+    }
 }
+
+//    | 개념                        | 설명                                |
+//    | ---------------------- | ---------------------------            |
+//    | JPA Entity             | 실제 DB 테이블과 매핑되는 Java 클래스       |
+//    | @ManyToOne / @OneToOne | 객체 간 관계 정의 (연관관계 매핑)           |
+//    | 지연 로딩(LAZY)          | 객체 관계를 즉시가 아닌 **필요할 때만 조회** |
+//    | EnumType.STRING        | enum 값을 문자열로 안전하게 저장           |
+//    | Lombok                 | 코드를 간결하게 만드는 자동 생성 어노테이션   |
+//    | 생성/수정 시간 상속       | 공통 기능(BaseTimeEntity) 재사용          |

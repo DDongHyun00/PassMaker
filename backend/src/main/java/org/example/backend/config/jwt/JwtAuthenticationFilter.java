@@ -57,7 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 스프링 시큐리티 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                user,                // 인증 주체(principal)
+//                                user,                // 인증 주체(principal)
+                            userDetails,
                                 null,                // 비밀번호 (null로 설정)
                                 userDetails.getAuthorities()                 // 권한 정보 (ex. USER/ADMIN - 우선 null)
                         );

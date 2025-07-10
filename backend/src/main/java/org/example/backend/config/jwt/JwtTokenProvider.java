@@ -6,7 +6,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.example.backend.auth.domain.CustomUserDetails;
+import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.domain.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -24,6 +29,7 @@ public class JwtTokenProvider {
     private long refreshTokenValidity;              // refresh 토큰의 유효시간
 
     private Key key;
+    private final UserRepository userRepository;
 
     @PostConstruct
     protected void init(){
@@ -58,6 +64,23 @@ public class JwtTokenProvider {
         );
     }
 
+    // 핵심 메서드: 인증 객체 생성
+    public Authentication getAuthentication(String token) {
+        Long userId = getUserId(token);
+        System.out.println("[JWT] 토큰에서 추출된 userId: " + userId);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 존재하지 않습니다: " + userId));
+        System.out.println("[JWT] DB에서 사용자 조회 성공: " + user.getEmail());
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        return new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities()
+        );
+    }
 
     // 토큰 유효성 검사
     public boolean validateToken(String token){
@@ -66,6 +89,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);          //여기서 Exception 나면 유효하지 않다는 뜻
             return true;
         } catch (JwtException | IllegalArgumentException e){
+            System.out.println("JWT 검증 실패: " + e.getMessage()); // ← 이거 추가 추천
             return false;
         }
 
