@@ -17,4 +17,6 @@ public class MentorDto {
     private String fieldName;
     private String careerDesc;
     private String thumbnail;
+    private double rating;     // 평균 평점
+    private long reviewCount;  // 리뷰 개수
 }
