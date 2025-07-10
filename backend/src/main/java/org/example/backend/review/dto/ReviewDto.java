@@ -28,4 +28,25 @@ public class ReviewDto {
         private String content;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReviewResponse {
+        private Long reviewId;
+        private int rating;
+        private String content;
+        private LocalDateTime createdAt;
+        private UserResponse reviewer;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserResponse {
+        private Long id;
+        private String nickname;
+    }
 }
