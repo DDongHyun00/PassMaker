@@ -1,8 +1,10 @@
-package org.example.backend.mentor.repository;
+package org.example.backend.user.repository;
 
-import org.example.backend.mentor.domain.MentorUser;
+import org.example.backend.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MentorUserRepository extends JpaRepository<MentorUser, Long> {
-  // 현재는 기본 findById()만 필요함
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User,Long> {
+    Optional<User> findByEmail(String email);
 }

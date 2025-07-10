@@ -13,7 +13,7 @@ import org.example.backend.auth.dto.LoginRequestDto;
 import org.example.backend.auth.dto.SignupRequestDto;
 import org.example.backend.auth.repository.RefreshRepository;
 import org.example.backend.auth.repository.TokenBlacklistRepository;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.auth.domain.CustomUserDetails;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.repository.TokenBlacklistRepository;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
