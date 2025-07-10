@@ -90,10 +90,13 @@ public class AuthServiceImpl implements AuthService {
     private void addTokenToCookie(String name, String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true); // HTTPS 환경에서만 전송
+        cookie.setSecure(false); // HTTPS 환경에서만 전송
         cookie.setPath("/");    // 쿠키의 경로 지정
         cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+//        response.addHeader("Set-Cookie", String.format("%s=%s; Path=/; HttpOnly", name, token));
         response.addCookie(cookie);
+//        String cookieValue = String.format("%s=%s; Path=/; HttpOnly; Secure; SameSite=None", name, token);
+//        response.addHeader("Set-Cookie", cookieValue);
     }
 
 

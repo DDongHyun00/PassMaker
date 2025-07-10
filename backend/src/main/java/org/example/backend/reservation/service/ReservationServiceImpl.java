@@ -2,8 +2,7 @@ package org.example.backend.reservation.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.reservation.domain.ReservationStatus;
 import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
@@ -14,6 +13,7 @@ import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.room.domain.MentoringRoom;
 import org.example.backend.room.repository.MentoringRoomRepository;
+import org.example.backend.room.service.MentoringRoomService;
 import org.example.backend.user.domain.User;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +25,7 @@ public class ReservationServiceImpl implements ReservationService {
   private final MentorUserRepository mentorUserRepository;
   private final MentoringRoomRepository mentoringRoomRepository;
   private final UserRepository userRepository;
+  private final MentoringRoomService mentoringRoomService;
 
   @Override
   @Transactional
@@ -75,20 +76,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     reservation.approve();
 
-    MentoringRoom room = MentoringRoom.builder()
-            .mentor(reservation.getMentor())
-            .user(reservation.getUser())
-            .reservation(reservation)
-            .roomCode(generateRoomCode())
-            .build();
+    MentoringRoom room = mentoringRoomService.createRoomFromReservation(reservation);
 
-    mentoringRoomRepository.save(room);
 
     return ApproveReservationResponseDTO.of(room);
   }
 
 
-  private String generateRoomCode(){
-    return RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-  }
+
 }
