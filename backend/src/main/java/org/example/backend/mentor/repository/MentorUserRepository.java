@@ -1,10 +1,7 @@
-package org.example.backend.user.repository;
+package org.example.backend.mentor.repository;
 
-import org.example.backend.user.domain.User;
+import org.example.backend.mentor.domain.MentorUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface UserRepository extends JpaRepository<User,Long> {
-    Optional<User> findByEmail(String email);
+public interface MentorUserRepository extends JpaRepository<MentorUser, Long> {
 }
