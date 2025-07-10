@@ -10,6 +10,9 @@ import org.example.backend.user.domain.User;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.example.backend.auth.domain.CustomUserDetails;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,25 @@ public class ReviewService {
 
     @Transactional
     public ReviewDto.CreateResponse createReview(ReviewDto.CreateRequest request) {
-        // TODO: JWT 토큰에서 사용자 정보 가져와서 설정해야 함
-        User user = userRepository.findById(1L) // 임시로 1번 유저 사용
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("User is not authenticated.");
+        }
+
+        // principal에서 User 객체 추출
+        User user;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            // JwtAuthenticationFilter에서 User 객체를 직접 principal로 설정한 경우
+            user = (User) principal;
+        } else if (principal instanceof CustomUserDetails) {
+            // JwtAuthenticationFilter에서 CustomUserDetails 객체를 principal로 설정한 경우
+            user = ((CustomUserDetails) principal).getUser();
+        } else {
+            // 예상치 못한 principal 타입인 경우 (예외 처리)
+            throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
+        }
 
         MentorUser mentor = mentorUserRepository.findById(request.getMentorId())
                 .orElseThrow(() -> new IllegalArgumentException("Mentor not found"));

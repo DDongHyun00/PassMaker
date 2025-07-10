@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mentor Reviews</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .review-list { list-style: none; padding: 0; }
+        .review-item { background-color: #f9f9f9; margin-bottom: 10px; padding: 15px; border-radius: 8px; }
+        .review-item p { margin: 0 0 5px 0; color: #333; }
+        .rating { font-weight: bold; color: #ffc107; }
+        .content { margin-top: 10px; color: #555; white-space: pre-line; }
+        .date { font-size: 0.8em; color: #888; text-align: right; }
+    </style>
+</head>
+<body>
+<!-- mentorName이 있을 때 -->
+<h1 th:if="${mentorName != null}" th:text="${mentorName} + '’s Reviews'">Mentor Reviews</h1>
+<!-- mentorName이 없을 때 기본 타이틀 -->
+<h1 th:unless="${mentorName != null}">Mentor Reviews</h1>
+
+<ul class="review-list">
+    <li th:each="review : ${reviews}" class="review-item">
+        <p>Rating: <span class="rating" th:text="${review.rating}"></span>/5</p>
+        <p>
+            User:
+            <span th:text="${review.user != null ? review.user.nickname : 'Anonymous'}"></span>
+        </p>
+        <p class="content" th:text="${review.content}"></p>
+        <p class="date" th:if="${review.createdAt}" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+    </li>
+    <li th:if="${#lists.isEmpty(reviews)}" class="review-item">
+        <p>No reviews found for this mentor.</p>
+    </li>
+</ul>
+
+<a href="/mentors">Back to Mentor List</a>
+</body>
+</html>
