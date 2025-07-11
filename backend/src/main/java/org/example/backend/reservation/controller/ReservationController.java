@@ -2,6 +2,7 @@ package org.example.backend.reservation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
+import org.example.backend.reservation.dto.ReservationActionRequestDTO;
 import org.example.backend.reservation.dto.ReservationRequestDto;
 import org.example.backend.reservation.dto.ReservationResponseDto;
 import org.example.backend.reservation.service.ReservationService;
@@ -9,6 +10,7 @@ import org.example.backend.auth.domain.CustomUserDetails; // 사용자 정의 Us
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -32,4 +34,33 @@ public class ReservationController {
     ApproveReservationResponseDTO response = reservationService.approveReservationResponse(reservationId);
     return ResponseEntity.ok(response);
   }
+
+  @PatchMapping("/{reservationId}/action")
+  public ResponseEntity<Void> handleReservationAction(
+      @PathVariable Long reservationId,
+      @RequestBody ReservationActionRequestDTO requestDto,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    reservationService.handleReservationAction(
+        reservationId,
+        requestDto.getAction(),
+        userDetails.getUserId()  // 멘토 ID
+    );
+
+    return ResponseEntity.ok().build();
+  }
+
+  // ✅ 멘티가 본인의 예약을 취소할 수 있는 API
+  @DeleteMapping("/api/reservations/{reservationId}/cancel")
+  public ResponseEntity<?> cancelReservation(
+      @PathVariable Long reservationId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    // 서비스 계층으로 위임 (예약 ID와 현재 로그인된 사용자 ID 전달)
+    reservationService.cancelReservation(reservationId, userDetails.getUserId());
+
+    // 성공 응답 반환
+    return ResponseEntity.ok("예약이 취소되었습니다.");
+  }
+
 }

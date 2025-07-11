@@ -39,6 +39,7 @@ public class MentoringReservation extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private ReservationStatus status;
 
     public void approve() {
