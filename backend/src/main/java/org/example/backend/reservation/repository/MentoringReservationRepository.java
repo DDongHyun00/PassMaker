@@ -1,5 +1,6 @@
 package org.example.backend.reservation.repository;
 
+import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,7 +15,10 @@ public interface MentoringReservationRepository extends JpaRepository<MentoringR
    * @param reservationTime 예약 시간
    * @return 중복 예약 존재 여부
    */
-  boolean existsByMentorIdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
+
+
+  boolean existsByMentor_MentorIdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
+
 }
 
 
