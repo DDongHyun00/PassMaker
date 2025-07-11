@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/reservations/**").authenticated()
                 .anyRequest().permitAll()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // ✅ 이거 중요!
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 이거 중요!
             .build();
 
     }

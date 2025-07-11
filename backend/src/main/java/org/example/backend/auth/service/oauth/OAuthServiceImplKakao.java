@@ -17,7 +17,7 @@ import org.example.backend.auth.dto.kakao.KakaoUserDto;
 import org.example.backend.auth.repository.OAuthUserRepository;
 import org.example.backend.auth.repository.RefreshRepository;
 import org.example.backend.auth.repository.TokenBlacklistRepository;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.example.backend.config.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

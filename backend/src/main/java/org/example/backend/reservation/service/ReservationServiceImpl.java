@@ -3,7 +3,7 @@ package org.example.backend.reservation.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
 import org.example.backend.payment.domain.RefundReasonType;
@@ -18,6 +18,7 @@ import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.room.domain.MentoringRoom;
 import org.example.backend.room.repository.MentoringRoomRepository;
+import org.example.backend.room.service.MentoringRoomService;
 import org.example.backend.user.domain.User;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -33,22 +34,27 @@ public class ReservationServiceImpl implements ReservationService {
   private final MentoringRoomRepository mentoringRoomRepository;
   private final UserRepository userRepository;
   private final TossRefundService tossRefundService;  // ✅ 추가된 의존성 주입
+  private final MentoringRoomService mentoringRoomService;
 
   @Override
   @Transactional
   public ReservationResponseDto createReservation(ReservationRequestDto requestDto, Long userId) {
+
     // 1. 사용자 조회
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
     // 2. 멘토 조회
     MentorUser mentor = mentorUserRepository.findById(requestDto.getMentorId())
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멘토입니다."));
+
     // 3. 예약 시간 중복 체크
     boolean isOverlapping = reservationRepository.existsByMentorAndReservationTime(
         mentor, requestDto.getReservationTime());
     if (isOverlapping) {
       throw new IllegalStateException("이미 예약된 시간입니다.");
     }
+
     // 4. 예약 저장
     MentoringReservation reservation = MentoringReservation.builder()
         .mentor(mentor)
@@ -58,6 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
         .build();
 
     MentoringReservation saved = reservationRepository.save(reservation);
+
     // 5. 응답 DTO 생성
     return new ReservationResponseDto(
         saved.getReserveId(),
@@ -78,12 +85,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     reservation.setStatus(ReservationStatus.ACCEPT);
 
-    MentoringRoom room = MentoringRoom.builder()
-        .mentor(reservation.getMentor())
-        .user(reservation.getUser())
-        .reservation(reservation)
-        .roomCode(generateRoomCode())
-        .build();
+    MentoringRoom room = mentoringRoomService.createRoomFromReservation(reservation);
 
     mentoringRoomRepository.save(room);
 

@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.auth.domain.CustomUserDetails;
-import org.example.backend.auth.repository.UserRepository;
+import org.example.backend.user.repository.UserRepository;
 import org.example.backend.user.domain.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
