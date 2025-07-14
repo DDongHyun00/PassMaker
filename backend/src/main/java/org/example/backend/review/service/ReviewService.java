@@ -60,7 +60,7 @@ public class ReviewService {
 
         return ReviewDto.CreateResponse.builder()
                 .reviewId(savedReview.getReviewId())
-                .mentorId(savedReview.getMentor().getMentorId())
+                .mentorId(savedReview.getMentor().getId())
                 .rating(savedReview.getRating())
                 .content(savedReview.getContent())
                 .createdAt(savedReview.getCreatedAt())
