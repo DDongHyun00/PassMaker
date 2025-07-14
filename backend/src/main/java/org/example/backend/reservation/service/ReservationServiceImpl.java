@@ -98,7 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
     MentoringReservation reservation = reservationRepository.findById(reservationId)
         .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
 
-    if (!reservation.getMentor().getMentorId().equals(mentorUserId)) {
+    if (!reservation.getMentor().getId().equals(mentorUserId)) {
       throw new AccessDeniedException("예약에 대한 권한이 없습니다.");
     }
 

@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.backend.auth.dto.LoginResponseDto;
 import org.example.backend.config.jwt.JwtTokenProvider;
 import org.example.backend.auth.domain.Refresh;
 import org.example.backend.auth.domain.TokenBlacklist;
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
     // 로그인
     @Override
     @Transactional
-    public void login(LoginRequestDto requestDto, HttpServletResponse response) {
+    public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse response) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
@@ -67,24 +68,33 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
-        // Refresh 토큰 DB 저장 (user별로 1개만 존재하게)
-        Optional<Refresh> existing = refreshRepository.findByUser(user);
-        if (existing.isPresent()) {
-            Refresh refresh = existing.get();
-            refresh.setToken(refreshToken);
-            refreshRepository.save(refresh);
-        } else {
-            Refresh refresh = Refresh.builder()
-                    .user(user)
-                    .token(refreshToken)
-                    .build();
-            refreshRepository.save(refresh);
-        }
+        // Refresh 토큰 저장
+        refreshRepository.findByUser(user).ifPresentOrElse(
+                refresh -> {
+                    refresh.setToken(refreshToken);
+                    refreshRepository.save(refresh);
+                },
+                () -> {
+                    Refresh refresh = Refresh.builder()
+                            .user(user)
+                            .token(refreshToken)
+                            .build();
+                    refreshRepository.save(refresh);
+                }
+        );
 
         // 쿠키에 토큰 저장
         addTokenToCookie("AccessToken", accessToken, response);
         addTokenToCookie("RefreshToken", refreshToken, response);
+
+        // 여기서 응답 DTO 생성해서 반환
+        return new LoginResponseDto(
+                user.getId(),
+                user.getNickname(),
+                user.getRole().name()
+        );
     }
+
 
     // 쿠키 생성 메서드
     private void addTokenToCookie(String name, String token, HttpServletResponse response) {

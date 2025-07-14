@@ -1,18 +1,20 @@
 package org.example.backend.auth.controller;
 
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.backend.auth.domain.CustomUserDetails;
 import org.example.backend.auth.dto.LoginRequestDto;
+import org.example.backend.auth.dto.LoginResponseDto;
 import org.example.backend.auth.dto.SignupRequestDto;
+import org.example.backend.auth.dto.UserInfoResponseDto;
 import org.example.backend.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,10 +31,14 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
-        authService.login(requestDto, response);
-        return ResponseEntity.ok("로그인 성공! 토큰 발급 완료");
+    public ResponseEntity<LoginResponseDto> login(
+            @RequestBody LoginRequestDto requestDto,
+            HttpServletResponse response) {
+
+        LoginResponseDto loginResponse = authService.login(requestDto, response);
+        return ResponseEntity.ok(loginResponse);
     }
+
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
@@ -47,4 +53,14 @@ public class AuthController {
         authService.reissue(request,response);
         return ResponseEntity.ok("AccessToken 재발급 완료");
     }
+
+    // 유저 토큰 확인
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        String username = userDetails.getUsername(); // Spring Security 기본 제공
+        return ResponseEntity.ok(new UserInfoResponseDto(userId, username));
+    }
+
+
 }

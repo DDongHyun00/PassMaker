@@ -23,15 +23,20 @@ public class MentorService {
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
     public List<MentorDto> getAllMentors() {
-        return mentorRepository.findAll().stream()
+        return mentorRepository.findAllWithUser().stream()
                 .map(this::convertToDto)   // 여기서 호출
                 .collect(Collectors.toList());
     }
 
     // ② convertToDto 메서드: 서비스 클래스 내부에 private으로 추가
     private MentorDto convertToDto(MentorUser m) {
-        long reviewCount = reviewRepository.countByMentorId(m.getMentorId());
-        Double avg = reviewRepository.findAverageRatingByMentorId(m.getMentorId());
+
+        if (m.getUser() == null) {
+            throw new IllegalStateException("MentorUser에 연결된 User가 없습니다. id=" + m.getId());
+        }
+
+        long reviewCount = reviewRepository.countByMentorId(m.getId());
+        Double avg = reviewRepository.findAverageRatingByMentorId(m.getId());
         double rating = (avg != null)
                 ? Math.round(avg * 10) / 10.0
                 : 0.0;

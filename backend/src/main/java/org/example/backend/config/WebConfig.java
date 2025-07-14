@@ -16,11 +16,12 @@ public class WebConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true); // 쿠키 허용
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173")); // 프론트 주소
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 더 명확하게 지정
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // JWT + 쿠키 확인용
+        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // 쿠키 응답 노출
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 적용
