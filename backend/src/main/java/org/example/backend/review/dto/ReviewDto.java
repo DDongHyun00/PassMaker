@@ -14,7 +14,7 @@ public class ReviewDto {
     @AllArgsConstructor
     public static class CreateRequest {
         private Long reservationId;
-        private Long mentorId;
+        private Long Id;
         private int rating;
         private String content;
     }

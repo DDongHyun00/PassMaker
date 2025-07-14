@@ -44,7 +44,7 @@ public class ReviewService {
             throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
         }
 
-        MentorUser mentor = mentorUserRepository.findById(request.getMentorId())
+        MentorUser mentor = mentorUserRepository.findById(request.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Mentor not found"));
 
         // TODO: reservationId로 예약 정보 확인 및 리뷰 작성 자격 검증 로직 추가 필요
