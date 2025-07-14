@@ -13,5 +13,6 @@ public interface ReservationRepository extends JpaRepository<MentoringReservatio
    boolean existsByMentorAndReservationTime(MentorUser mentor, LocalDateTime reservationTime);
 
   // ✅ 방법 2 (권장 - mentorId 그대로 사용 가능)
-  boolean existsByMentor_MentorIdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
+  boolean existsByMentor_IdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
+
 }

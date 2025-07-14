@@ -33,7 +33,7 @@ public class ReservationServiceImpl implements ReservationService {
   private final MentorUserRepository mentorUserRepository;
   private final MentoringRoomRepository mentoringRoomRepository;
   private final UserRepository userRepository;
-  private final TossRefundService tossRefundService;  // ✅ 추가된 의존성 주입
+  private final TossRefundService tossRefundService;  // 추가된 의존성 주입
   private final MentoringRoomService mentoringRoomService;
 
   @Override
@@ -45,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
     // 2. 멘토 조회
-    MentorUser mentor = mentorUserRepository.findById(requestDto.getMentorId())
+    MentorUser mentor = mentorUserRepository.findById(requestDto.getId())
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멘토입니다."));
 
     // 3. 예약 시간 중복 체크

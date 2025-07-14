@@ -16,8 +16,8 @@ public interface MentoringReservationRepository extends JpaRepository<MentoringR
    * @return 중복 예약 존재 여부
    */
 
+  boolean existsByMentor_IdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
 
-  boolean existsByMentor_MentorIdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
 
 }
 
