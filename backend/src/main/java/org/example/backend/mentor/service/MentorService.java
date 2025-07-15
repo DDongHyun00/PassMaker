@@ -48,7 +48,13 @@ public class MentorService {
                 .map(f -> f.getFieldName())
                 .collect(Collectors.joining(", "));
         String careers = m.getCareers().stream()
-                .map(c -> c.getCareerDesc())
+                .map(c -> {
+                    String careerString = c.getCompany();
+                    if (c.getPeriod() != null && !c.getPeriod().isEmpty()) {
+                        careerString += " (" + c.getPeriod() + ")";
+                    }
+                    return careerString;
+                })
                 .collect(Collectors.joining(", "));
 
         return MentorDto.builder()

@@ -48,7 +48,13 @@ public class MentorDetailController {
                 .collect(Collectors.toList());
 
         List<String> careers = mentorUser.getCareers().stream()
-                .map(career -> career.getCareerDesc())
+                .map(career -> {
+                    String careerString = career.getCompany();
+                    if (career.getPeriod() != null && !career.getPeriod().isEmpty()) {
+                        careerString += " (" + career.getPeriod() + ")";
+                    }
+                    return careerString;
+                })
                 .collect(Collectors.toList());
 
         // 평균 평점 및 리뷰 개수 조회

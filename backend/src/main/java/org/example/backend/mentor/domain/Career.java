@@ -26,5 +26,9 @@ public class Career {
 
     @NotNull
     @Size(max = 255)
-    private String careerDesc;
+    private String company;
+
+    @NotNull
+    @Size(max = 255)
+    private String period;
 }
