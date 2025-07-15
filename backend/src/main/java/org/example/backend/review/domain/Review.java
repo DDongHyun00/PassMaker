@@ -21,7 +21,11 @@ public class Review extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+<<<<<<< Updated upstream
     private Long Id;
+=======
+    private Long id;
+>>>>>>> Stashed changes
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id", nullable = false)
@@ -40,7 +44,11 @@ public class Review extends BaseTimeEntity {
     @Lob
     private String content;
 
+<<<<<<< Updated upstream
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
     private MentoringReservation reservation;
+=======
+    private boolean isReported = false;  // 기본값 false
+>>>>>>> Stashed changes
 }

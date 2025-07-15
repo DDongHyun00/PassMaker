@@ -1,24 +1,28 @@
 package org.example.backend.admin.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.admin.dto.DashDailySaleDto;
 import org.example.backend.admin.repository.AdminUserRepository;
+import org.example.backend.admin.service.DashDailySaleService;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class AdminStatsController {
+public class AdminDashController {
 
     private final UserRepository userRepository;
     private final AdminUserRepository adminUserRepository;
+    private final DashDailySaleService dashDailySaleService;
 
     // 총 사용자 수 반환
-    @GetMapping({"", "/"})
+    @GetMapping({"/stats"})
     public ResponseEntity<?> getAdminStats() {
         long totalUserCount = userRepository.count();
         long mentorCount = adminUserRepository.countMentors(); // isMentor = true
@@ -27,5 +31,11 @@ public class AdminStatsController {
                 "totalUserCount", totalUserCount,
                 "mentorCount", mentorCount
         ));
+    }
+
+    @GetMapping("/daily")
+    public ResponseEntity<List<DashDailySaleDto>> getRecentReportSummaries(
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(dashDailySaleService.getRecentReports(size));
     }
 }
