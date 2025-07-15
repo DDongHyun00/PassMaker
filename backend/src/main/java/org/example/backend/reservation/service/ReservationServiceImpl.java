@@ -3,6 +3,7 @@ package org.example.backend.reservation.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.example.backend.reservation.dto.ReservationDto;
 import org.example.backend.user.repository.UserRepository;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
@@ -153,7 +154,69 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reservation);
     }
 
+    @Override
+    @Transactional
+    public ReservationDto getReservationStatus(Long reservationId, Long userId) {
+        MentoringReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
+
+        if (!reservation.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("본인의 예약만 조회할 수 있습니다.");
+        }
+
+        // ReservationDto는 ReservationResponseDto와 유사한 구조를 가지고 있으므로,
+        // ReservationResponseDto를 ReservationDto로 변환하여 반환합니다.
+        return new ReservationDto(
+                reservation.getReserveId(),
+                reservation.getMentor().getUser().getNickname(),
+                reservation.getReservationTime(),
+                reservation.getStatus(),
+                reservation.getStatus().name(), // statusLabel
+                getReservationStatusColor(reservation.getStatus()) // statusColor
+        );
+    }
+
+    private String getReservationStatusColor(ReservationStatus status) {
+        switch (status) {
+            case ACCEPT:
+                return "green";
+            case REJECT:
+                return "red";
+            case WAITING:
+                return "orange";
+            case PAID:
+                return "blue";
+            case CANCELLED:
+                return "gray";
+            default:
+                return "black"; // Default color for unknown status
+        }
+    }
+
     private String generateRoomCode() {
         return RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+    }
+
+    // ✅ 추가: 특정 사용자의 모든 예약 내역을 조회하는 메서드 구현
+    @Override
+    @Transactional
+    public java.util.List<ReservationDto> getAllReservations(Long userId) {
+        // 1. 사용자 조회 (존재하지 않는 사용자일 경우 예외 처리)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 2. 해당 사용자의 모든 예약 내역 조회
+        java.util.List<MentoringReservation> reservations = reservationRepository.findByUser(user);
+
+        // 3. MentoringReservation 리스트를 ReservationDto 리스트로 변환하여 반환
+        return reservations.stream()
+                .map(reservation -> new ReservationDto(
+                        reservation.getReserveId(),
+                        reservation.getMentor().getUser().getNickname(),
+                        reservation.getReservationTime(),
+                        reservation.getStatus(),
+                        reservation.getStatus().name(),
+                        getReservationStatusColor(reservation.getStatus())))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

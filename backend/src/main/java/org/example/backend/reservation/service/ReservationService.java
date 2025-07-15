@@ -11,4 +11,7 @@ public interface ReservationService {
   ApproveReservationResponseDTO approveReservationResponse(Long reservationId);
   String handleReservationAction(Long reservationId, String action, Long mentorUserId);
   void cancelReservation(Long reservationId, Long userId);
+  ReservationDto getReservationStatus(Long reservationId, Long userId);
+  // ✅ 추가: 특정 사용자의 모든 예약 내역을 조회하는 메서드
+  java.util.List<ReservationDto> getAllReservations(Long userId);
 }
