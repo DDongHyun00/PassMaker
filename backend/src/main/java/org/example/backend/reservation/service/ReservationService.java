@@ -12,5 +12,3 @@ public interface ReservationService {
   String handleReservationAction(Long reservationId, String action, Long mentorUserId);
   void cancelReservation(Long reservationId, Long userId);
 }
-
-

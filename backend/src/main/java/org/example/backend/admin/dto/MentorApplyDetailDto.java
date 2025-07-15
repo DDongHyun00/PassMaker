@@ -2,10 +2,7 @@ package org.example.backend.admin.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +26,7 @@ public class MentorApplyDetailDto {
     private List<CareerDto> careers;
 
     @Data
+    @Getter
     @Builder
     public static class CareerDto {
         private String company;

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.dto.MentorDto;
 import org.example.backend.mentor.repository.MentorRepository;
+import org.example.backend.reservation.repository.ReservationRepository;
 import org.example.backend.review.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,8 @@ public class MentorService {
 
     private final MentorRepository mentorRepository;
     private final ReviewRepository reviewRepository;
+    private final ReservationRepository reservationRepository;   // ← 직접 주입
+
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
     public List<MentorDto> getAllMentors() {
