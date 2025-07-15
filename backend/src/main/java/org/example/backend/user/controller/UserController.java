@@ -3,11 +3,16 @@ package org.example.backend.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.dto.UserResponseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.example.backend.user.service.UserService;
+import org.example.backend.reservation.dto.ReservationDto;
+
+import java.util.List;
 
 // @Controller	- HTML 페이지(view) 반환
 // @RestController	- 데이터(JSON) 반환
@@ -16,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users") // URI를 /api/users로 변경
 public class UserController {
+
+    private final UserService userService;
 
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user){
@@ -27,5 +34,14 @@ public class UserController {
         }
 
         return ResponseEntity.ok(new UserResponseDto(user));
+    }
+
+    @GetMapping("/me/reservations")
+    public ResponseEntity<List<ReservationDto>> getMyReservations(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<ReservationDto> reservations = userService.getMyReservations(user.getId());
+        return ResponseEntity.ok(reservations);
     }
 }

@@ -50,6 +50,8 @@ public class MentorService {
 
         return MentorDto.builder()
                 .nickname(m.getUser().getNickname())
+                .mentoringTitle(m.getMentoringTitle()) // 멘토링 제목.
+                .hourlyRate(m.getHourlyRate())       // 멘토링 시간당 금액.
                 .intro(m.getIntro())
                 .fieldName(fields)
                 .careerDesc(careers)

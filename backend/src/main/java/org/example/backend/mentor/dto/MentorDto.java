@@ -13,10 +13,12 @@ import org.example.backend.mentor.domain.MentorUser;
 @AllArgsConstructor
 public class MentorDto {
     private String nickname;
+    private String mentoringTitle;
     private String intro;
     private String fieldName;
     private String careerDesc;
     private String thumbnail;
+    private Integer hourlyRate;
     private double rating;     // 평균 평점
     private long reviewCount;  // 리뷰 개수
 }
