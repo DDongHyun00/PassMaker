@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List; // ✅ 추가: List import
+
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
@@ -52,7 +54,7 @@ public class ReservationController {
   }
 
   // ✅ 멘티가 본인의 예약을 취소할 수 있는 API
-  @DeleteMapping("/api/reservations/{reservationId}/cancel")
+  @DeleteMapping("/{reservationId}/cancel") // ✅ URI 변경: /api/reservations 제거
   public ResponseEntity<?> cancelReservation(
       @PathVariable Long reservationId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -62,6 +64,23 @@ public class ReservationController {
 
     // 성공 응답 반환
     return ResponseEntity.ok("예약이 취소되었습니다.");
+  }
+
+  // ✅ 변경: 특정 예약 상태 조회 (MPE-001)
+  @GetMapping("/{reservationId}") // ✅ URI 변경: /status 제거
+  public ResponseEntity<ReservationDto> getReservationById(
+      @PathVariable Long reservationId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    ReservationDto reservationStatus = reservationService.getReservationStatus(reservationId, userDetails.getUserId());
+    return ResponseEntity.ok(reservationStatus);
+  }
+
+  // ✅ 추가: 전체 예약 내역 조회
+  @GetMapping
+  public ResponseEntity<List<ReservationDto>> getAllReservations(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    List<ReservationDto> reservations = reservationService.getAllReservations(userDetails.getUserId());
+    return ResponseEntity.ok(reservations);
   }
 
 }
