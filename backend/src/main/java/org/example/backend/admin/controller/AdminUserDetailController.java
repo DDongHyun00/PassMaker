@@ -36,10 +36,23 @@ public class AdminUserDetailController {
                         .name(user.getName())
                         .email(user.getEmail())
                         .isMentor(user.isMentor())
+                        .status(user.getStatus().name())
                         .createdAt(user.getCreatedAt())
                         .reservations(reservations)
                         .build()
         );
+    }
+
+    @PutMapping("/users/{userId}/restore")
+    public ResponseEntity<String> restoreUser(@PathVariable Long userId) {
+        User user = adminUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 유저 상태를 '활동회원'으로 변경
+        user.setStatus(Status.ACTIVE);
+        adminUserRepository.save(user);
+
+        return ResponseEntity.ok("계정이 복원되었습니다.");
     }
 
     @PutMapping("/users/{userId}/suspend")
@@ -47,7 +60,6 @@ public class AdminUserDetailController {
         User user = adminUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
-        // 유저 상태를 '정지'로 변경
         user.setStatus(Status.SUSPENDED);
         adminUserRepository.save(user);
 
