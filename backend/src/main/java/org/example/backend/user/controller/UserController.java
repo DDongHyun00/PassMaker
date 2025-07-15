@@ -3,12 +3,14 @@ package org.example.backend.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.dto.UserResponseDto;
+import org.example.backend.user.dto.FindEmailRequestDto;
+import org.example.backend.user.dto.FindEmailResponseDto;
+import org.example.backend.user.dto.ResetPasswordRequestDto;
+import org.example.backend.user.dto.ResetPasswordResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.example.backend.user.service.UserService;
 import org.example.backend.reservation.dto.ReservationDto;
 
@@ -43,5 +45,18 @@ public class UserController {
         }
         List<ReservationDto> reservations = userService.getMyReservations(user.getId());
         return ResponseEntity.ok(reservations);
+    }
+
+    @PostMapping("/find-email")
+    public ResponseEntity<FindEmailResponseDto> findEmail(@RequestBody FindEmailRequestDto requestDto) {
+        FindEmailResponseDto responseDto = userService.findEmail(requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResetPasswordResponseDto> resetPassword(
+            @RequestBody ResetPasswordRequestDto requestDto
+    ) {
+        return ResponseEntity.ok(userService.resetPassword(requestDto));
     }
 }
