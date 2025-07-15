@@ -8,6 +8,8 @@ import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.user.domain.User;
 
+import java.util.List;
+
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class MentorApply extends BaseTimeEntity {
@@ -30,4 +32,13 @@ public class MentorApply extends BaseTimeEntity {
 
     @Size(max = 255)
     private String reason;
+
+    @OneToMany(mappedBy = "apply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ApplyField> applyFields;
+
+    @OneToMany(mappedBy = "apply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ApplyCareer> applyCareers;
+
+    @OneToMany(mappedBy = "apply", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ApplyCertification> applyCertifications;
 }

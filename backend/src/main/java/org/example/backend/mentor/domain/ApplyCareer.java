@@ -23,7 +23,6 @@ public class ApplyCareer {
     @JoinColumn(name = "apply_id", nullable = false)
     private MentorApply apply;
 
-    @NotNull
-    @Size(max = 255)
-    private String careerDesc;
+    private String company;
+    private String period;
 }

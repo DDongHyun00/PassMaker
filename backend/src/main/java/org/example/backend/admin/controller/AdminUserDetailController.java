@@ -3,12 +3,10 @@ package org.example.backend.admin.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.admin.dto.UserDetailDto;
 import org.example.backend.admin.repository.AdminUserDetailRepository;
+import org.example.backend.user.domain.Status;
 import org.example.backend.user.domain.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,4 +41,28 @@ public class AdminUserDetailController {
                         .build()
         );
     }
+
+    @PutMapping("/users/{userId}/suspend")
+    public ResponseEntity<String> suspendUser(@PathVariable Long userId) {
+        User user = adminUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 유저 상태를 '정지'로 변경
+        user.setStatus(Status.SUSPENDED);
+        adminUserRepository.save(user);
+
+        return ResponseEntity.ok("계정이 정지되었습니다.");
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        User user = adminUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        user.setStatus(Status.DELETED);
+        adminUserRepository.save(user);
+
+        return ResponseEntity.ok("계정이 삭제되었습니다.");
+    }
+
 }

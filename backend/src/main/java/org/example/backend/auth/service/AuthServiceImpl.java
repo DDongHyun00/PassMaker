@@ -9,6 +9,7 @@ import org.example.backend.config.jwt.JwtTokenProvider;
 import org.example.backend.auth.domain.Refresh;
 import org.example.backend.auth.domain.TokenBlacklist;
 import org.example.backend.user.domain.Role;
+import org.example.backend.user.domain.Status;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.dto.LoginRequestDto;
 import org.example.backend.auth.dto.SignupRequestDto;
@@ -49,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(requestDto.getName())
                 .phone(requestDto.getPhone())
                 .role(Role.USER)
+                .status(Status.ACTIVE)
                 .build();
 
         userRepository.save(user);

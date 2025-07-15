@@ -6,6 +6,7 @@ import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.mentor.domain.MentorApply;
 import org.example.backend.mentor.domain.MentorUser;
+import org.example.backend.reservation.domain.MentoringReservation;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
@@ -13,8 +14,6 @@ import java.util.List;
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class User extends BaseTimeEntity {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +44,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.ACTIVE;
+
 
 
     // === 연관 관계 ===
@@ -54,6 +57,9 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<MentorApply> mentorApplications;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<MentoringReservation> mentorReservations;
 
 
     // TODO: 테스트용으로 추가한 메서드입니다.

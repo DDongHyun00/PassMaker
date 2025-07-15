@@ -29,7 +29,7 @@ public class UserDto {
         this.nickname = user.getNickname();
 
         this.type = user.isMentor() ? "멘토" : "멘티";
-//        this.status = convertStatus(user.getStatus());
+        this.status = convertStatus(user.getStatus());
         this.joinDate = user.getCreatedAt().toLocalDate().toString(); // 날짜만 추출
     }
 
@@ -38,7 +38,7 @@ public class UserDto {
         if (status == null) return "활동회원";
         return switch (status) {
             case ACTIVE -> "활동회원";
-            case INACTIVE -> "탈퇴회원";
+            case DELETED -> "탈퇴회원";
             case SUSPENDED -> "블랙리스트";
         };
     }
