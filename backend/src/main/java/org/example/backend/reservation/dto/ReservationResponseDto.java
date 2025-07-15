@@ -1,6 +1,7 @@
 package org.example.backend.reservation.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.backend.reservation.domain.ReservationStatus;
@@ -13,7 +14,10 @@ import java.time.LocalDateTime;
 public class ReservationResponseDto {
 
   private Long reservationId;             // 예약 ID
+  private Long mentorId;                  // 멘토 ID
+  private Long menteeId;                  // 멘티 ID
   private String mentorName;              // 멘토 이름 (예: 장유빈)
   private LocalDateTime reservationTime;  // 예약 시간
   private ReservationStatus status;       // WAITING, COMPLETED 등
+  private String paymentStatus;           // 결제 상태 (예: PAID, UNPAID)
 }

@@ -61,11 +61,7 @@ public class ReviewService {
 
         return ReviewDto.CreateResponse.builder()
                 .reviewId(savedReview.getId())
-<<<<<<< Updated upstream
                 .storeId(savedReview.getMentor().getId())
-=======
-                .mentorId(savedReview.getMentor().getId())
->>>>>>> Stashed changes
                 .rating(savedReview.getRating())
                 .content(savedReview.getContent())
                 .createdAt(savedReview.getCreatedAt())

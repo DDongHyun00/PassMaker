@@ -1,5 +1,6 @@
 package org.example.backend.auth.domain;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -54,10 +56,6 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public User getUser() {
-        return user;
     }
 
 

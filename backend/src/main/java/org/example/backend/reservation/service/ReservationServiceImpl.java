@@ -67,10 +67,15 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 5. 응답 DTO 생성
         return new ReservationResponseDto(
-                saved.getReserveId(),
-                mentor.getUser().getNickname(),
-                saved.getReservationTime(),
-                saved.getStatus()
+                saved.getReserveId(),                            // 1. 예약 ID
+                saved.getMentor().getId(),                       // 2. 멘토 ID
+                saved.getUser().getUserId(),                     // 3. 멘티 ID
+                saved.getMentor().getUser().getNickname(),       // 4. 멘토 이름
+                saved.getReservationTime(),                      // 5. 예약 시간
+                saved.getStatus(),                               // 6. 예약 상태
+                saved.getPayment() != null
+                        ? saved.getPayment().getStatus().name()      // 7. 결제 상태
+                        : "UNPAID"
         );
     }
 

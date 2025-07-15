@@ -33,6 +33,7 @@ public class ReviewReport extends BaseTimeEntity {
     @Column(length = 500)
     private String detail;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ReportStatus status = ReportStatus.PENDING;
