@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.mentor.domain.MentorUser;
+import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.user.domain.User;
 
 @Entity
@@ -20,7 +21,7 @@ public class Review extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id", nullable = false)
@@ -38,4 +39,8 @@ public class Review extends BaseTimeEntity {
     @NotNull
     @Lob
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private MentoringReservation reservation;
 }

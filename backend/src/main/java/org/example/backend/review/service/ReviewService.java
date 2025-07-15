@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.review.domain.Review;
+import org.example.backend.review.dto.ReviewActionDto;
 import org.example.backend.review.dto.ReviewDto;
 import org.example.backend.review.repository.ReviewRepository;
 import org.example.backend.user.domain.User;
@@ -59,8 +60,8 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(review);
 
         return ReviewDto.CreateResponse.builder()
-                .reviewId(savedReview.getReviewId())
-                .mentorId(savedReview.getMentor().getId())
+                .reviewId(savedReview.getId())
+                .storeId(savedReview.getMentor().getId())
                 .rating(savedReview.getRating())
                 .content(savedReview.getContent())
                 .createdAt(savedReview.getCreatedAt())

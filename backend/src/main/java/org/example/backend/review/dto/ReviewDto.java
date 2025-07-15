@@ -7,27 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReviewDto {
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CreateRequest {
-        private Long reservationId;
-        private Long Id;
-        private int rating;
-        private String content;
-    }
-
-    @Getter
-    @Builder
-    public static class CreateResponse {
-        private Long reviewId;
-        private Long mentorId;
-        private int rating;
-        private String content;
-        private LocalDateTime createdAt;
-    }
+    private Long reviewId;
+    private Long mentorId;
+    private int rating;
+    private String content;
+    private LocalDateTime createdAt;
 
     @Getter
     @Builder
@@ -48,5 +37,30 @@ public class ReviewDto {
     public static class UserResponse {
         private Long id;
         private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateRequest {
+        private Long id; // mentorId
+        private int rating;
+        private String content;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateResponse {
+        private Long reviewId;
+        private Long userId;
+        private String userNickname;
+        private Long storeId;
+        private String storeName;
+        private int rating;
+        private String content;
+        private LocalDateTime createdAt;
     }
 }

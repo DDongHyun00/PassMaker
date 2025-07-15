@@ -3,14 +3,15 @@ package org.example.backend.reservation.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
 import org.example.backend.reservation.dto.ReservationActionRequestDTO;
+import org.example.backend.reservation.dto.ReservationDto;
 import org.example.backend.reservation.dto.ReservationRequestDto;
 import org.example.backend.reservation.dto.ReservationResponseDto;
+import org.example.backend.reservation.dto.ReservationCancelRequestDto; // 추가된 import
 import org.example.backend.reservation.service.ReservationService;
 import org.example.backend.auth.domain.CustomUserDetails; // 사용자 정의 UserDetails
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/api/reservations")
