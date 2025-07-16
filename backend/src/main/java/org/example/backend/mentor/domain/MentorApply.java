@@ -9,6 +9,7 @@ import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.user.domain.User;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
