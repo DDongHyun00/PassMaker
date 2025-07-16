@@ -1,6 +1,7 @@
 package org.example.backend.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.auth.domain.CustomUserDetails;
 import org.example.backend.user.domain.User;
 import org.example.backend.auth.dto.UserResponseDto;
 import org.example.backend.user.dto.FindEmailRequestDto;
@@ -10,6 +11,7 @@ import org.example.backend.user.dto.ResetPasswordResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.example.backend.user.service.UserService;
 import org.example.backend.reservation.dto.ReservationDto;
@@ -27,6 +29,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user){
@@ -58,5 +61,18 @@ public class UserController {
             @RequestBody ResetPasswordRequestDto requestDto
     ) {
         return ResponseEntity.ok(userService.resetPassword(requestDto));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> withdrawUser(@AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.withdraw(userDetails.getUser());
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+    }
+
+
+    // 테스트용 비밀번호 해시값 받기 (1111)
+    @GetMapping("/encode-test")
+    public String encodeTest(){
+        return passwordEncoder.encode("1111");
     }
 }

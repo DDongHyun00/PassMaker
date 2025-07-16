@@ -25,7 +25,7 @@ public class MyPageController {
     }
 
     // 내 정보 수정
-    @PutMapping("/profile")
+    @PatchMapping("/profile/edit")
     public ResponseEntity<UserProfileDto> updateUserProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody UserUpdateDto userUpdateDto) {
         Long userId = customUserDetails.getUserId();
         UserProfileDto updatedUserProfile = myPageService.updateUserProfile(userId, userUpdateDto);

@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.reservation.dto.ReservationDto;
 import org.example.backend.reservation.repository.ReservationRepository;
+import org.example.backend.user.domain.Status;
 import org.example.backend.user.domain.User;
 import org.example.backend.user.dto.FindEmailRequestDto;
 import org.example.backend.user.dto.FindEmailResponseDto;
 import org.example.backend.user.dto.ResetPasswordRequestDto;
 import org.example.backend.user.dto.ResetPasswordResponseDto;
 import org.example.backend.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +31,9 @@ public class UserServiceImpl implements UserService {
     private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+
+    @Value("${naverSetFrom}")
+    private String naverSetFrom;
 
     @Override
     public List<ReservationDto> getMyReservations(Long userId) {
@@ -105,12 +110,18 @@ public class UserServiceImpl implements UserService {
         // 4. 이메일 발송
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
-        message.setFrom("panda7715@naver.com"); // 실제 SMTP 계정과 동일하게 설정해야 함
+        message.setFrom(naverSetFrom); // 실제 SMTP 계정과 동일하게 설정해야 함
         message.setSubject("[PassMaker] 임시 비밀번호 안내");
         message.setText("임시 비밀번호는 다음과 같습니다: " + tempPassword + "\n로그인 후 반드시 비밀번호를 변경해주세요.");
         mailSender.send(message);
 
         return new ResetPasswordResponseDto("임시 비밀번호가 이메일로 전송되었습니다.");
+    }
+
+    @Transactional
+    public void withdraw(User user){
+        user.setStatus(Status.DELETED);
+        userRepository.save(user);
     }
 
 }
