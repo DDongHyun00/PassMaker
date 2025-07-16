@@ -15,6 +15,7 @@ import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
 import org.example.backend.reservation.dto.ReservationRequestDto;
 import org.example.backend.reservation.dto.ReservationResponseDto;
 import org.example.backend.reservation.repository.ReservationRepository;
+import org.example.backend.reservation.repository.MentoringReservationRepository;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.room.domain.MentoringRoom;
@@ -36,6 +37,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final UserRepository userRepository;
     private final TossRefundService tossRefundService;  // 추가된 의존성 주입
     private final MentoringRoomService mentoringRoomService;
+    private final MentoringReservationRepository mentoringReservationRepository;
+
 
     @Override
     @Transactional
@@ -55,6 +58,9 @@ public class ReservationServiceImpl implements ReservationService {
         if (isOverlapping) {
             throw new IllegalStateException("이미 예약된 시간입니다.");
         }
+    if (mentor.getUser().getUserId().equals(user.getUserId())) {
+      throw new AccessDeniedException("자기 자신에게는 예약할 수 없습니다.");
+    }
 
         // 4. 예약 저장
         MentoringReservation reservation = MentoringReservation.builder()
@@ -80,10 +86,16 @@ public class ReservationServiceImpl implements ReservationService {
         );
     }
 
-    @Transactional
-    public ApproveReservationResponseDTO approveReservationResponse(Long reservationId) {
-        MentoringReservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
+
+  @Override
+  public boolean checkDuplicateReservation(Long mentorId, LocalDateTime reservationTime) {
+    return mentoringReservationRepository.existsByMentorIdAndTimeIgnoringSeconds(mentorId, reservationTime);
+  }
+
+  @Transactional
+  public ApproveReservationResponseDTO approveReservationResponse(Long reservationId) {
+    MentoringReservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
         if (reservation.getStatus() == ReservationStatus.ACCEPT) {
             throw new RuntimeException("이미 승인된 예약입니다.");
@@ -98,11 +110,11 @@ public class ReservationServiceImpl implements ReservationService {
         return ApproveReservationResponseDTO.of(room);
     }
 
-    // 멘토가 수락 또는 거절 (거절 시 환불 포함)
-    @Transactional
-    public String handleReservationAction(Long reservationId, String action, Long mentorUserId) {
-        MentoringReservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
+
+  @Transactional
+  public String handleReservationAction(Long reservationId, String action, Long mentorUserId) {
+    MentoringReservation reservation = reservationRepository.findById(reservationId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
 
         if (!reservation.getMentor().getId().equals(mentorUserId)) {
             throw new AccessDeniedException("예약에 대한 권한이 없습니다.");
@@ -138,7 +150,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
         }
 
-        if (reservation.getStatus() != ReservationStatus.PAID) {
+        if (reservation.getStatus() != ReservationStatus.ACCEPT) {
             throw new IllegalStateException("결제 완료된 예약만 취소할 수 있습니다.");
         }
 
@@ -184,8 +196,6 @@ public class ReservationServiceImpl implements ReservationService {
                 return "red";
             case WAITING:
                 return "orange";
-            case PAID:
-                return "blue";
             case CANCELLED:
                 return "gray";
             default:

@@ -1,27 +1,32 @@
 package org.example.backend.reservation.repository;
 
-import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 
-// ✅ JPA Repository - 예약 중복 여부 체크 메서드 추가
 public interface MentoringReservationRepository extends JpaRepository<MentoringReservation, Long> {
-  // Long: MentoringReservation의 PK 타입
-  /**
-   * 해당 멘토가 특정 시간에 이미 예약되어 있는지 검사합니다.
-   * @param mentorId 멘토 ID
-   * @param reservationTime 예약 시간
-   * @return 중복 예약 존재 여부
-   */
 
+  /**
+   * ✅ 기본 메서드: 정확히 같은 시간에 예약된 항목이 있는지
+   */
   boolean existsByMentor_IdAndReservationTime(Long mentorId, LocalDateTime reservationTime);
 
-
+  /**
+   * ✅ 커스텀 JPQL - 초 단위 무시하고 분 단위까지만 비교
+   * (중복 예약 방지용으로 사용됨)
+   */
+  @Query("""
+      SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+      FROM MentoringReservation r
+      WHERE r.mentor.id = :mentorId
+        AND FUNCTION('DATE_FORMAT', r.reservationTime, '%Y-%m-%d %H:%i') =
+            FUNCTION('DATE_FORMAT', :reservationTime, '%Y-%m-%d %H:%i')
+  """)
+  boolean existsByMentorIdAndTimeIgnoringSeconds(
+      @Param("mentorId") Long mentorId,
+      @Param("reservationTime") LocalDateTime reservationTime
+  );
 }
-
-
-
-
-

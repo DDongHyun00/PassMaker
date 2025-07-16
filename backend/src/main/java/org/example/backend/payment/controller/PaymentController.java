@@ -1,18 +1,19 @@
 package org.example.backend.payment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.auth.domain.CustomUserDetails;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
-import org.example.backend.payment.domain.RefundReasonType;
 import org.example.backend.payment.dto.PaymentResponseDto;
 import org.example.backend.payment.dto.RefundRequestDto;
-import org.example.backend.payment.dto.TossPaymentConfirmRequest;
-import org.example.backend.payment.dto.PaymentResponseDto;
+import org.example.backend.payment.dto.TossPaymentReserveRequest;
 import org.example.backend.payment.repository.PaymentRepository;
 import org.example.backend.payment.service.PaymentService;
 import org.example.backend.payment.service.TossRefundService;
+import org.example.backend.user.domain.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,31 +25,42 @@ public class PaymentController {
   private final TossRefundService tossRefundService;
   private final PaymentRepository paymentRepository;
 
-  @PostMapping("/toss/confirm")
-  public ResponseEntity<?> confirmTossPayment(@RequestBody TossPaymentConfirmRequest request) {
+  /**
+   * ✅ 신규: 예약 + 결제 승인 통합 처리 (orderId 사용)
+   */
+  @PostMapping("/toss/reserve")
+  public ResponseEntity<?> reserveAfterPayment(
+      @RequestBody TossPaymentReserveRequest request,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails // ✅ 인증 객체
+  ) {
     try {
-      PaymentResponseDto response = paymentService.confirmPayment(
+      User user = customUserDetails.getUser(); // ✅ 실제 로그인한 User Entity
+
+      PaymentResponseDto response = paymentService.reserveAfterPayment(
+          request.getMentorId(),
+          request.getOrderId(),
           request.getPaymentKey(),
-          request.getReservationId(),
-          request.getAmount()
+          request.getAmount(),
+          request.getReservationTime(),
+          user
       );
+
       return ResponseEntity.ok(response);
-
     } catch (Exception e) {
-      // 콘솔에 예외 전체 출력
-      System.err.println("❌ 결제 승인 처리 중 오류 발생:");
       e.printStackTrace();
-
-      // Postman에도 오류 메시지를 반환
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("서버 오류 발생: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+          .body("예약/결제 처리 실패: " + e.getMessage());
     }
   }
+
+  /**
+   * ✅ 환불 요청
+   */
   @PostMapping("/{paymentId}/cancel")
   public ResponseEntity<String> refundPayment(
       @PathVariable String paymentId,
-      @RequestBody RefundRequestDto refundRequestDto) {
-
+      @RequestBody RefundRequestDto refundRequestDto
+  ) {
     if (refundRequestDto == null || refundRequestDto.getReasonMessage() == null) {
       throw new IllegalArgumentException("취소 사유는 필수입니다.");
     }
@@ -58,8 +70,7 @@ public class PaymentController {
     Payment payment = paymentRepository.findById(paymentId)
         .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다."));
 
-    tossRefundService.refund(payment, cancelReason); // ✅ 문자열 기반으로 넘김
-
+    tossRefundService.refund(payment, cancelReason);
     payment.setStatus(PaymentStatus.CANCELLED);
     paymentRepository.save(payment);
 
