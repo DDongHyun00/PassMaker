@@ -26,9 +26,9 @@ public class MyPageService {
                 .id(user.getId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .phoneNum(user.getPhone())
+                .phone(user.getPhone())
                 .name(user.getName())
-                .profileImageUrl(user.getThumbnail())
+                .thumbnail(user.getThumbnail())
                 .isMentor(user.isMentor())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -41,15 +41,11 @@ public class MyPageService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다. id=" + userId));
 
-        // 현재 비밀번호 확인
-        if (user.getPassword() != null && !passwordEncoder.matches(userUpdateDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
 
         // 정보 업데이트
         user.setNickname(userUpdateDto.getNickname());
-        user.setPhone(userUpdateDto.getPhoneNum());
-        user.setThumbnail(userUpdateDto.getProfileImageUrl());
+        user.setPhone(userUpdateDto.getPhone());
+        user.setThumbnail(userUpdateDto.getThumbnail());
 
         User updatedUser = userRepository.save(user);
 

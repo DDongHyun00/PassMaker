@@ -1,6 +1,7 @@
 package org.example.backend.user.service;
 
 import org.example.backend.reservation.dto.ReservationDto;
+import org.example.backend.user.domain.User;
 import org.example.backend.user.dto.FindEmailRequestDto;
 import org.example.backend.user.dto.FindEmailResponseDto;
 import org.example.backend.user.dto.ResetPasswordRequestDto;
@@ -12,5 +13,6 @@ public interface UserService {
     List<ReservationDto> getMyReservations(Long userId);
     FindEmailResponseDto findEmail(FindEmailRequestDto requestDto);
     ResetPasswordResponseDto resetPassword(ResetPasswordRequestDto requestDto);
+    void withdraw(User user);
 
 }

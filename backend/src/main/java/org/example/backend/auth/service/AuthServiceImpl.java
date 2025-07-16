@@ -66,6 +66,12 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+        else if(user.getStatus() == Status.DELETED){
+            throw new IllegalStateException("탈퇴한 회원입니다. 로그인이 불가능합니다.");
+        }
+        else if(user.getStatus() == Status.SUSPENDED){
+            throw new IllegalStateException("정지된 계정입니다. 관리자에게 문의하세요.");
+        }
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());

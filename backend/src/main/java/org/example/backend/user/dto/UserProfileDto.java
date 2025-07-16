@@ -13,9 +13,9 @@ public class UserProfileDto {
     private Long id;
     private String nickname;
     private String email;
-    private String phoneNum;
+    private String phone;
     private String name;
-    private String profileImageUrl;
+    private String thumbnail;
     private boolean isMentor;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
