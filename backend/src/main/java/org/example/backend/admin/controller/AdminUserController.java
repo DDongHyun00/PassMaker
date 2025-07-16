@@ -2,16 +2,13 @@ package org.example.backend.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.admin.repository.AdminUserRepository;
-import org.example.backend.user.domain.Role;
-import org.example.backend.user.domain.User;
-import org.example.backend.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.example.backend.admin.dto.UserDto;
+import org.example.backend.admin.dto.AdminUserDto;
 
 import java.util.Map;
 
@@ -44,12 +41,12 @@ public class AdminUserController {
         if (role.equals("MENTOR")) isMentor = true;
         else if (role.equals("MENTEE")) isMentor = false;
 
-        Page<UserDto> userPage = adminUserRepository
+        Page<AdminUserDto> userPage = adminUserRepository
                 .searchUsers(name.isBlank() ? null : name,
                         nickname.isBlank() ? null : nickname,
                         isMentor,
                         pageable)
-                .map(UserDto::new);
+                .map(AdminUserDto::new);
 
         return ResponseEntity.ok().body(
                 Map.of(

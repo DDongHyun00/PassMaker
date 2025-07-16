@@ -1,9 +1,8 @@
 package org.example.backend.admin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backend.admin.dto.MentorApplyDetailDto;
-import org.example.backend.admin.dto.MentorApplyDto;
-import org.example.backend.admin.repository.MentorApplyRepository;
+import org.example.backend.admin.dto.AdminMentorApplyDto;
+import org.example.backend.admin.repository.AdminMentorApplyRepository;
 import org.example.backend.mentor.domain.ApplyStatus;
 import org.example.backend.mentor.domain.MentorApply;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.example.backend.mentor.domain.ApplyCareer;
 import org.example.backend.mentor.domain.ApplyField;
 
 import java.util.List;
@@ -21,8 +19,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class MentorApplyController {
-    private final MentorApplyRepository mentorApplyRepository;
+public class AdminMentorApplyController {
+    private final AdminMentorApplyRepository adminMentorApplyRepository;
 
     @GetMapping("/mentor-application")
     public ResponseEntity<?> getMentorApplications(
@@ -51,9 +49,9 @@ public class MentorApplyController {
 
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        Page<MentorApply> pageResult = mentorApplyRepository.findFiltered(searchText, enumStatus, type, pageRequest);
+        Page<MentorApply> pageResult = adminMentorApplyRepository.findFiltered(searchText, enumStatus, type, pageRequest);
 
-        List<MentorApplyDto> dtoList = pageResult.stream().map(m -> MentorApplyDto.builder()
+        List<AdminMentorApplyDto> dtoList = pageResult.stream().map(m -> AdminMentorApplyDto.builder()
                 .applyId(m.getApplyId())
                 .applicationDate(m.getCreatedAt())
                 .name(m.getUser().getName())

@@ -5,6 +5,6 @@ import org.example.backend.mentor.domain.MentorApply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface MentorApplyRepositoryCustom {
+public interface AdminMentorApplyRepositoryCustom {
     Page<MentorApply> findFiltered(String searchText, ApplyStatus status, String type, Pageable pageable);
 }

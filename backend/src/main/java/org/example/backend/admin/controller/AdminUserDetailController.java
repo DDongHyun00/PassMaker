@@ -1,7 +1,7 @@
 package org.example.backend.admin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backend.admin.dto.UserDetailDto;
+import org.example.backend.admin.dto.AdminUserDetailDto;
 import org.example.backend.admin.repository.AdminUserDetailRepository;
 import org.example.backend.user.domain.Status;
 import org.example.backend.user.domain.User;
@@ -17,12 +17,12 @@ public class AdminUserDetailController {
     private final AdminUserDetailRepository adminUserRepository;
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<UserDetailDto> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<AdminUserDetailDto> getUserProfile(@PathVariable Long userId) {
         User user = adminUserRepository.findByIdWithReservations(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
-        List<UserDetailDto.ReservationInfo> reservations = user.getMentorReservations().stream()
-                .map(r -> UserDetailDto.ReservationInfo.builder()
+        List<AdminUserDetailDto.ReservationInfo> reservations = user.getMentorReservations().stream()
+                .map(r -> AdminUserDetailDto.ReservationInfo.builder()
                         .reserveId(r.getReserveId())
                         .reservationTime(r.getReservationTime())
                         .mentorName(r.getMentor().getUser().getName())
@@ -31,7 +31,7 @@ public class AdminUserDetailController {
                 ).toList();
 
         return ResponseEntity.ok(
-                UserDetailDto.builder()
+                AdminUserDetailDto.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .email(user.getEmail())

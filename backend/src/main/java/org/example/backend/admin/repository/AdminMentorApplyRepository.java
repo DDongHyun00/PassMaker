@@ -13,7 +13,7 @@ import org.example.backend.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface MentorApplyRepository extends JpaRepository<MentorApply, Long>, MentorApplyRepositoryCustom {
+public interface AdminMentorApplyRepository extends JpaRepository<MentorApply, Long>, AdminMentorApplyRepositoryCustom {
 
     @EntityGraph(attributePaths = {"user", "applyFields", "applyCareers"})
     @Query("SELECT m FROM MentorApply m WHERE (:status IS NULL OR m.status = :status)")

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class MentorApplyDto {
+public class AdminMentorApplyDto {
     private Long applyId;
     private LocalDateTime applicationDate;
     private String name;

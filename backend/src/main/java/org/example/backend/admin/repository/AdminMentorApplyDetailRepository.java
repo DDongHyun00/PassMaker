@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface MentorApplyDetailRepository extends JpaRepository<MentorApply, Long> {
+public interface AdminMentorApplyDetailRepository extends JpaRepository<MentorApply, Long> {
     // 첫 번째 쿼리 - 기본 정보 + user + applyFields
     @Query("SELECT m FROM MentorApply m " +
             "JOIN FETCH m.user " +
