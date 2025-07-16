@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         // 4. 이메일 발송
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
-        message.setFrom("jao5535@naver.com"); // 실제 SMTP 계정과 동일하게 설정해야 함
+        message.setFrom("panda7715@naver.com"); // 실제 SMTP 계정과 동일하게 설정해야 함
         message.setSubject("[PassMaker] 임시 비밀번호 안내");
         message.setText("임시 비밀번호는 다음과 같습니다: " + tempPassword + "\n로그인 후 반드시 비밀번호를 변경해주세요.");
         mailSender.send(message);

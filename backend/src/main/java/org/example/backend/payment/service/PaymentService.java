@@ -2,6 +2,8 @@ package org.example.backend.payment.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
+import org.example.backend.mentor.domain.MentorUser;
+import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
 import org.example.backend.payment.dto.PaymentResponseDto;
@@ -9,95 +11,137 @@ import org.example.backend.payment.repository.PaymentRepository;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.reservation.domain.ReservationStatus;
 import org.example.backend.reservation.repository.MentoringReservationRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+import org.example.backend.user.domain.User;
+import org.example.backend.user.repository.UserRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Map;
 
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class PaymentService {
 
+  private final WebClient tossWebClient;
   private final PaymentRepository paymentRepository;
   private final MentoringReservationRepository reservationRepository;
+  private final MentorUserRepository mentorUserRepository;
+  private final UserRepository userRepository;
 
-  private final WebClient tossWebClient;
-  private final String tossSecretKey;
 
-  public PaymentService(
-      PaymentRepository paymentRepository,
-      MentoringReservationRepository reservationRepository,
-      @Value("${toss.secret-key}") String tossSecretKey
+  /**
+   * ✅ 결제 성공 후 → 예약 + 결제 통합 저장
+   */
+  public PaymentResponseDto reserveAfterPayment(Long mentorId, String orderId, String paymentKey, int amount, LocalDateTime reservationTime, User user
   ) {
-    this.paymentRepository = paymentRepository;
-    this.reservationRepository = reservationRepository;
-    this.tossSecretKey = tossSecretKey;
-
-    this.tossWebClient = WebClient.builder()
-        .baseUrl("https://api.tosspayments.com/v1")
-        .defaultHeader(HttpHeaders.AUTHORIZATION,
-            "Basic " + Base64.getEncoder().encodeToString((tossSecretKey + ":").getBytes()))
-        .build();
-  }
-
-  public PaymentResponseDto confirmPayment(String paymentKey, Long reservationId, int amount) {
-    System.out.println("=== [1단계] 결제 확인 요청 진입 ===");
+    System.out.println("=== [예약 + 결제 통합 처리 시작] ===");
     System.out.println(">>> paymentKey: " + paymentKey);
-    System.out.println(">>> reservationId: " + reservationId);
+    System.out.println(">>> orderId: " + orderId);
     System.out.println(">>> amount: " + amount);
-    System.out.println(">>> orderId 조합 값: reserve_" + reservationId);
+    System.out.println(">>> reserTime: " + reservationTime);
 
+
+
+
+
+    // ✅ 2. 중복 체크
+    boolean exists = reservationRepository.existsByMentorIdAndTimeIgnoringSeconds(mentorId, reservationTime);
+    if (exists) {
+      throw new IllegalStateException("이미 예약된 시간입니다.");
+    }
+
+    // ✅ 3. 예약 생성
+    MentorUser mentor = mentorUserRepository.findById(mentorId)
+        .orElseThrow(() -> new IllegalArgumentException("멘토 정보를 찾을 수 없습니다."));
+
+    // TODO: 실제 사용자 인증 연결 필요
+    User mentee = user;
+
+    MentoringReservation reservation = MentoringReservation.builder()
+        .mentor(mentor)
+        .user(mentee)
+        .reservationTime(reservationTime)
+        .status(ReservationStatus.WAITING)
+        .build();
+
+    reservationRepository.save(reservation);
+
+    // ✅ 4. 결제 승인 요청
     Map<String, Object> requestBody = Map.of(
         "paymentKey", paymentKey,
-        "orderId", "reserve_" + reservationId,
+        "orderId", orderId,
         "amount", amount
     );
-    System.out.println(">>> RequestBody: " + requestBody);
 
-    JsonNode tossResponse = tossWebClient.post()
-        .uri("/payments/confirm")
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(requestBody)
-        .retrieve()
-        .bodyToMono(JsonNode.class)
-        .block();
+    JsonNode tossResponse = confirmTossPaymentWithRetry(requestBody);
 
-    System.out.println("=== Toss 응답 완료 ===");
-    System.out.println(">>> tossResponse: " + tossResponse);
-
-    MentoringReservation reservation = reservationRepository.findById(reservationId)
-        .orElseThrow(() -> new RuntimeException("예약 정보가 존재하지 않습니다."));
-
+    // ✅ 5. 결제 정보 저장
     Payment payment = Payment.builder()
-        .payId(reservationId.toString())
+        .payId(orderId)
         .paymentKey(paymentKey)
         .amount(amount)
         .approvedAt(LocalDateTime.now())
         .reservation(reservation)
         .status(PaymentStatus.PAID)
         .build();
+
     paymentRepository.save(payment);
 
-    reservation.setStatus(ReservationStatus.PAID);
-    reservationRepository.save(reservation);
-
-    System.out.println("=== 결제 저장 및 상태 변경 완료 ===");
-
-    // ✅ PaymentResponseDto 반환
+    // ✅ 6. 응답 DTO 생성
     return PaymentResponseDto.builder()
         .payId(payment.getPayId())
         .amount(payment.getAmount())
         .status(payment.getStatus().name())
+        .reservationStatus(reservation.getStatus().name())
         .approvedAt(payment.getApprovedAt())
-        .reservationId(reservation.getReserveId())
-        .mentorNickname(reservation.getMentor().getUser().getNickname())
-        .menteeNickname(reservation.getUser().getNickname())
+        .reservationTime(reservationTime)
+        .mentorNickname(mentor.getUser().getNickname())
+        .menteeNickname(mentee.getNickname())
         .build();
+  }
 
+  private JsonNode confirmTossPaymentWithRetry(Map<String, Object> requestBody) {
+    int retryCount = 0;
+    int maxRetry = 3;
+    int retryDelayMillis = 1000;
+
+    while (retryCount < maxRetry) {
+      JsonNode response = tossWebClient.post()
+          .uri("/payments/confirm")
+          .contentType(MediaType.APPLICATION_JSON)
+          .bodyValue(requestBody)
+          .exchangeToMono(res -> res.bodyToMono(JsonNode.class))
+          .block();
+
+      if (response != null) {
+        System.out.println(">>> Toss 응답(" + (retryCount + 1) + "회차): " + response.toPrettyString());
+
+        if (response.has("code")) {
+          String errorCode = response.get("code").asText();
+          if ("ALREADY_PROCESSED_PAYMENT".equals(errorCode)) {
+            System.out.println("✅ Toss: 이미 처리된 결제. 성공으로 간주하고 종료.");
+            return response;
+          }
+        }
+
+        if (response.has("status") && "DONE".equals(response.get("status").asText())) {
+          return response;
+        }
+      }
+
+      retryCount++;
+      System.out.println("🔁 Toss 결제 재시도 " + retryCount + "회");
+
+      try {
+        Thread.sleep(retryDelayMillis);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new RuntimeException("Toss 결제 재시도 중 인터럽트됨");
+      }
+    }
+
+    throw new RuntimeException("Toss 결제 실패 또는 최대 재시도 초과");
   }
 }

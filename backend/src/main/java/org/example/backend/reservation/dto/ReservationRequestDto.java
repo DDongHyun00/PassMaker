@@ -9,6 +9,6 @@ import java.time.LocalDateTime;
 @Setter
 public class ReservationRequestDto {
 
-  private Long Id;                 // 예약할 멘토 ID
+  private Long id;                 // 예약할 멘토 ID
   private LocalDateTime reservationTime; // 예약  시각
 }

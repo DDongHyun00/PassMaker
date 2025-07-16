@@ -1,4 +1,3 @@
-
 package org.example.backend.reservation.domain;
 
 import jakarta.persistence.*;
@@ -7,6 +6,7 @@ import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.payment.domain.Payment;
+import org.example.backend.payment.domain.PaymentStatus;
 import org.example.backend.user.domain.User;
 
 import java.time.LocalDateTime;
@@ -42,6 +42,7 @@ public class MentoringReservation extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private ReservationStatus status;
 
+    // ✅ 상태 전환 메서드
     public void approve() {
         this.status = ReservationStatus.ACCEPT;
     }
@@ -49,13 +50,14 @@ public class MentoringReservation extends BaseTimeEntity {
     public void reject() {
         this.status = ReservationStatus.REJECT;
     }
-}
 
-//    | 개념                        | 설명                                |
-//    | ---------------------- | ---------------------------            |
-//    | JPA Entity             | 실제 DB 테이블과 매핑되는 Java 클래스       |
-//    | @ManyToOne / @OneToOne | 객체 간 관계 정의 (연관관계 매핑)           |
-//    | 지연 로딩(LAZY)          | 객체 관계를 즉시가 아닌 **필요할 때만 조회** |
-//    | EnumType.STRING        | enum 값을 문자열로 안전하게 저장           |
-//    | Lombok                 | 코드를 간결하게 만드는 자동 생성 어노테이션   |
-//    | 생성/수정 시간 상속       | 공통 기능(BaseTimeEntity) 재사용          |
+    // ✅ 선택적: 결제 여부 확인 메서드 (null-safe)
+    public boolean isPaid() {
+        return payment != null && payment.getStatus() == PaymentStatus.PAID;
+    }
+
+    public boolean isCancelable() {
+        return payment != null && payment.getStatus() == PaymentStatus.PAID &&
+            status == ReservationStatus.WAITING;
+    }
+}

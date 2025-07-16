@@ -2,6 +2,7 @@
 package org.example.backend.mentor.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.dto.MentorDto;
 import org.example.backend.mentor.repository.MentorRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,6 +28,12 @@ public class MentorService {
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
     public List<MentorDto> getAllMentors() {
+        List<MentorUser> mentors = mentorRepository.findAllWithUser();
+        for (MentorUser m : mentors) {
+            if (m.getUser() == null) {
+                log.error("❌ 연결된 User 없음: mentorId = {}", m.getId());
+            }
+        }
         return mentorRepository.findAllWithUser().stream()
                 .map(this::convertToDto)   // 여기서 호출
                 .collect(Collectors.toList());
