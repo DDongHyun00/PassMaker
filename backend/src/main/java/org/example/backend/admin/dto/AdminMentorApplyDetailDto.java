@@ -1,7 +1,5 @@
 package org.example.backend.admin.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,7 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MentorApplyDetailDto {
+public class AdminMentorApplyDetailDto {
     private Long applyId;
     private String applicantName;
     private String email;

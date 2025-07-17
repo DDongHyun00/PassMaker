@@ -8,7 +8,7 @@ import org.example.backend.mentor.dto.MentorApplicationResponseDto;
 import org.example.backend.mentor.repository.ApplyCareerRepository;
 import org.example.backend.mentor.repository.ApplyCertificationRepository;
 import org.example.backend.mentor.repository.ApplyFieldRepository;
-import org.example.backend.admin.repository.MentorApplyRepository;
+import org.example.backend.admin.repository.AdminMentorApplyRepository;
 import org.example.backend.user.domain.User;
 import org.example.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MentorApplicationServiceImpl implements MentorApplicationService {
 
-    private final MentorApplyRepository mentorApplyRepository;
+    private final AdminMentorApplyRepository adminMentorApplyRepository;
     private final UserRepository userRepository;
     private final ApplyFieldRepository applyFieldRepository;
     private final ApplyCareerRepository applyCareerRepository;
@@ -32,7 +32,7 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (mentorApplyRepository.findByUser(user).isPresent()) {
+        if (adminMentorApplyRepository.findByUser(user).isPresent()) {
             throw new IllegalStateException("Mentor application already exists for this user.");
         }
 
@@ -42,7 +42,7 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
                 .status(ApplyStatus.PENDING) // 초기 상태는 PENDING
                 .build();
 
-        MentorApply savedApply = mentorApplyRepository.save(mentorApply);
+        MentorApply savedApply = adminMentorApplyRepository.save(mentorApply);
 
         // fields 저장
         if (requestDto.getFields() != null) {
@@ -93,7 +93,7 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        MentorApply mentorApply = mentorApplyRepository.findByUser(user)
+        MentorApply mentorApply = adminMentorApplyRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Mentor application not found for this user."));
 
         // 관련 엔티티들을 DTO로 변환하여 포함

@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class MentorApplyRepositoryImpl implements MentorApplyRepositoryCustom{
+public class AdminMentorApplyRepositoryImpl implements AdminMentorApplyRepositoryCustom {
     private final EntityManager em;
 
     @Override

@@ -44,4 +44,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "reserve_id", nullable = false) // 수정!
     private MentoringReservation reservation;
 
+
+    private boolean IsReported;
+
 }
