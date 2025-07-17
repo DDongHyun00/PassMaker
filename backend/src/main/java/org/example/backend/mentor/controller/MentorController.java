@@ -3,7 +3,9 @@ package org.example.backend.mentor.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.mentor.dto.MentorDto;
+import org.example.backend.mentor.dto.MentorProfileUpdateDto;
 import org.example.backend.mentor.dto.MentorSimpleDto;
+import org.example.backend.mentor.dto.MentorUserDto;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.mentor.service.MentorService;
 import org.example.backend.mentor.service.MentorReservationService; // 추가
@@ -23,9 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MentorController {
 
+    private final MentorUserRepository mentorUserRepository;
     private final MentorService mentorService;
     private final MentorReservationService mentorReservationService; // 추가
-    private final MentorUserRepository mentorUserRepository;
 
     @GetMapping
     public ResponseEntity<List<MentorDto>> getAllMentors() {
@@ -47,6 +49,23 @@ public class MentorController {
         Long mentorId = userDetails.getUserId();
         ReservationDto updatedReservation = mentorReservationService.acceptOrRejectReservation(reservationId, actionDto.getAction(), mentorId);
         return ResponseEntity.ok(updatedReservation);
+    }
+
+    /**
+     * MPR-004: 멘토 소개글을 수정합니다.
+     * PUT /api/mentors/me/edit-profile
+     * @param updateDto 수정할 멘토 프로필 정보
+     * @param userDetails 현재 인증된 멘토의 정보
+     * @return 업데이트된 멘토 프로필 정보
+     */
+
+    @PutMapping("/me/edit-profile")
+    public ResponseEntity<MentorUserDto> updateMentorProfile(
+            @RequestBody MentorProfileUpdateDto updateDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long mentorId = userDetails.getUserId();
+        MentorUserDto updatedMentor = mentorService.updateMentorProfile(mentorId, updateDto);
+        return ResponseEntity.ok(updatedMentor);
     }
     @GetMapping("/id/{mentorId}")
     @Transactional(readOnly = true)

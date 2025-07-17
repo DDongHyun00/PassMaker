@@ -98,3 +98,7 @@ deploy.log
 .cache/
 .next/
 .nuxt/
+
+# Generated files
+**/generated/
+build/generated/
