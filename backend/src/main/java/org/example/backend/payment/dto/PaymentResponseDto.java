@@ -13,6 +13,7 @@ public class PaymentResponseDto {
   private String status; // 결제 상태 (PAID / CANCELED / FAILED)
   private LocalDateTime approvedAt;
   LocalDateTime reservationTime;
+  private Long reserveId; // ✅ 이걸로 DB, Entity, DTO, JSON 통일
 
   private String mentorNickname;
   private String menteeNickname;
