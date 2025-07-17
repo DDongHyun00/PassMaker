@@ -63,12 +63,6 @@ public class UserController {
         return ResponseEntity.ok(userService.resetPassword(requestDto));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> withdrawUser(@AuthenticationPrincipal CustomUserDetails userDetails){
-        userService.withdraw(userDetails.getUser());
-        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
-    }
-
 
     // 테스트용 비밀번호 해시값 받기 (1111)
     @GetMapping("/encode-test")
