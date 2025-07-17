@@ -13,6 +13,6 @@ public interface UserService {
     List<ReservationDto> getMyReservations(Long userId);
     FindEmailResponseDto findEmail(FindEmailRequestDto requestDto);
     ResetPasswordResponseDto resetPassword(ResetPasswordRequestDto requestDto);
-    void withdraw(User user);
+
 
 }

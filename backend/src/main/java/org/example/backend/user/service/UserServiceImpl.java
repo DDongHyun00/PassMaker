@@ -118,10 +118,6 @@ public class UserServiceImpl implements UserService {
         return new ResetPasswordResponseDto("임시 비밀번호가 이메일로 전송되었습니다.");
     }
 
-    @Transactional
-    public void withdraw(User user){
-        user.setStatus(Status.DELETED);
-        userRepository.save(user);
-    }
+
 
 }
