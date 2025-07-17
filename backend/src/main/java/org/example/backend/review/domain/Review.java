@@ -43,4 +43,6 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
     private MentoringReservation reservation;
+
+    private boolean IsReported;
 }

@@ -1,18 +1,15 @@
 package org.example.backend.admin.dto;
 
 import lombok.*;
-import org.example.backend.user.domain.Role;
 import org.example.backend.user.domain.Status;
 import org.example.backend.user.domain.User;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class AdminUserDto {
     private Long id;
     private String name;
     private String email;
@@ -22,7 +19,7 @@ public class UserDto {
     private String status;      // "활동중" 등
     private String joinDate;    // yyyy-MM-dd
 
-    public UserDto(User user) {
+    public AdminUserDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();

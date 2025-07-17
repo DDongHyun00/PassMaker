@@ -40,10 +40,20 @@ public class MentorUser extends BaseTimeEntity {
     private Integer hourlyRate;         // Korean: 멘토링 시간당 요금
 
     @Builder.Default
-    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Field> fields = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
+
+    public void addField(Field field) {
+        field.setMentor(this);
+        this.fields.add(field);
+    }
+
+    public void addCareer(Career career) {
+        career.setMentor(this);
+        this.careers.add(career);
+    }
 }
