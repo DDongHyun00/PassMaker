@@ -22,7 +22,7 @@ public class Payment extends BaseTimeEntity {
     private String payId; // 외부 결제 키 기반 ID
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservation_id", nullable = false)
+    @JoinColumn(name = "reserve_id", nullable = false) // 수정!
     private MentoringReservation reservation;
 
     @NotNull

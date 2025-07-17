@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InterviewRecord {
+public class SttRecord {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

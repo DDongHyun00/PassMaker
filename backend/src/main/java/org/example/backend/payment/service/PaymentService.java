@@ -99,6 +99,8 @@ public class PaymentService {
         .reservationTime(reservationTime)
         .mentorNickname(mentor.getUser().getNickname())
         .menteeNickname(mentee.getNickname())
+
+        .reserveId(reservation.getReserveId()) // ✅ 이 줄 추가!
         .build();
   }
 

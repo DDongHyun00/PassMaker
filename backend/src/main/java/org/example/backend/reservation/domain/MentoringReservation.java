@@ -21,6 +21,7 @@ public class MentoringReservation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reserve_id") // 이 부분 중요!
     private Long reserveId;
 
     @ManyToOne(fetch = FetchType.LAZY)
