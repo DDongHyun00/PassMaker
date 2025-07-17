@@ -47,6 +47,10 @@ public class MentorUser extends BaseTimeEntity {
     @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Certification> certifications = new ArrayList<>();
+
     public void addField(Field field) {
         field.setMentor(this);
         this.fields.add(field);

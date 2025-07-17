@@ -11,13 +11,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/mentor-applications")
+@RequestMapping("/api/mentor-applications") //MPE-005 멘토 신청 기능 구현
 @RequiredArgsConstructor
 public class MentorApplicationController {
 
     private final MentorApplicationService mentorApplicationService;
 
-    @PostMapping
+    @PostMapping // 멘토 신청
     public ResponseEntity<MentorApplicationResponseDto> applyForMentor(
             @RequestBody MentorApplicationRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -25,7 +25,7 @@ public class MentorApplicationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/me") // 신청 내역 확인
     public ResponseEntity<MentorApplicationResponseDto> getMyMentorApplicationStatus(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         MentorApplicationResponseDto responseDto = mentorApplicationService.getMentorApplicationStatus(userDetails.getUserId());
