@@ -36,11 +36,17 @@ public class AdminMentorApplyRepositoryImpl implements AdminMentorApplyRepositor
         }
 
         StringBuilder where = new StringBuilder();
-
+        Long id = null;
         if (!searchText.isBlank()) {
             where.append(" AND (LOWER(u.name) LIKE LOWER(CONCAT('%', :searchText, '%')) ")
-                    .append("OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchText, '%')) ")
-                    .append("OR LOWER(m.applyId) LIKE LOWER(CONCAT('%', :searchText, '%')))");
+                    .append("OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchText, '%')) ");
+
+            try {
+                id = Long.parseLong(searchText);
+                where.append("OR m.applyId = :id)"); // 숫자 비교
+            } catch (NumberFormatException e) {
+                where.append(")"); // 괄호만 닫기
+            }
         }
 
         if (status != null) {
@@ -57,11 +63,16 @@ public class AdminMentorApplyRepositoryImpl implements AdminMentorApplyRepositor
         if (!searchText.isBlank()) {
             query.setParameter("searchText", searchText);
             countQuery.setParameter("searchText", searchText);
+            if (id != null) {
+                query.setParameter("id", id);
+                countQuery.setParameter("id", id);
+            }
         }
         if (status != null) {
             query.setParameter("status", status);
             countQuery.setParameter("status", status);
         }
+
         if (!type.equals("전체 분야")) {
             query.setParameter("type", type);
             countQuery.setParameter("type", type);
