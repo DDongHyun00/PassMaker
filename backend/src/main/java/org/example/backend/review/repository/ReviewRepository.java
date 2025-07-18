@@ -13,14 +13,13 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    List<Review> findByMentor(MentorUser mentor);
+    List<Review> findByReservation_Mentor(MentorUser mentor);
 
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.reservation.mentor.id = :mentorId")
     long countByMentorId(@Param("mentorId") Long mentorId);
 
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.mentor.id = :mentorId")
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.reservation.mentor.id = :mentorId")
     Double findAverageRatingByMentorId(@Param("mentorId") Long mentorId);
 
-    Long id(Long id);
-
-    List<Review> findByUser(User user);
+    List<Review> findByReservation_User_Id(Long userId);
 }

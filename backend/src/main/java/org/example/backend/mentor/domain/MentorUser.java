@@ -39,6 +39,10 @@ public class MentorUser extends BaseTimeEntity {
     @Column(name = "hourly_rate", nullable = false)
     private Integer hourlyRate;         // Korean: 멘토링 시간당 요금
 
+    /** 멘토의 활동 상태 (true: 모집 중, false: 비활성) */
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive; // 멘토의 활동 상태
+
     @Builder.Default
     @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Field> fields = new ArrayList<>();
