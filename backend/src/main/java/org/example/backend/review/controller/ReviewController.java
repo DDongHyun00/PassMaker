@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.example.backend.auth.domain.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.example.backend.review.dto.ReviewReportDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +31,10 @@ public class ReviewController {
     private final MentorUserRepository mentorUserRepository;
 
     @PostMapping("/reviews") // /api/reviews
-    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewActionDto request) {
-        ReviewDto response = userReviewService.createReview(request); // userReviewService 호출
+    public ResponseEntity<ReviewDto.CreateResponse> createReview(
+            @RequestBody ReviewDto.CreateRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        ReviewDto.CreateResponse response = reviewService.createReview(request, userDetails.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -46,7 +51,7 @@ public class ReviewController {
             return ResponseEntity.notFound().build();
         }
         MentorUser mentor = mentorOptional.get();
-        List<Review> reviews = reviewRepository.findByMentor(mentor);
+        List<Review> reviews = reviewRepository.findByReservation_Mentor(mentor);
 
         List<ReviewDto.ReviewResponse> reviewResponses = reviews.stream()
                 .map(review -> ReviewDto.ReviewResponse.builder()
@@ -54,9 +59,9 @@ public class ReviewController {
                         .rating(review.getRating())
                         .content(review.getContent())
                         .createdAt(review.getCreatedAt())
-                        .reviewer(review.getUser() != null ? ReviewDto.UserResponse.builder()
-                                .id(review.getUser().getId())
-                                .nickname(review.getUser().getNickname())
+                        .reviewer(review.getReservation().getUser() != null ? ReviewDto.UserResponse.builder()
+                                .id(review.getReservation().getUser().getId())
+                                .nickname(review.getReservation().getUser().getNickname())
                                 .build() : null)
                         .build())
                 .collect(java.util.stream.Collectors.toList());
@@ -65,8 +70,27 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews/me") // /api/reviews/me
-    public ResponseEntity<List<ReviewDto.ReviewResponse>> getReviewsByMe() {
-        List<ReviewDto.ReviewResponse> myReviews = userReviewService.getReviewsByMe(); // userReviewService 호출
+    public ResponseEntity<List<ReviewDto.ReviewResponse>> getReviewsByMe(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        List<ReviewDto.ReviewResponse> myReviews = userReviewService.getReviewsByMe(userId); // userReviewService 호출
         return ResponseEntity.ok(myReviews);
+    }
+
+    /**
+     * MPR-007: 리뷰 신고
+     * 부적절한 리뷰에 대한 신고를 처리합니다.
+     * POST /api/reviews/report
+     * @param reportDto 신고할 리뷰의 ID와 신고 사유를 포함하는 DTO
+     * @param userDetails 현재 인증된 신고자의 정보
+     * @return 성공 시 200 OK 응답
+     */
+    @PostMapping("/reviews/report")
+    public ResponseEntity<Void> reportReview(
+            @RequestBody ReviewReportDto reportDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long reporterUserId = userDetails.getUserId();
+        reviewService.reportReview(reportDto, reporterUserId);
+        return ResponseEntity.ok().build();
     }
 }

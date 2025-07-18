@@ -23,14 +23,6 @@ public class Review extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentor_id", nullable = false)
-    private MentorUser mentor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @NotNull
     @Min(1)
     @Max(5)
@@ -44,5 +36,6 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "reserve_id", nullable = false) // 수정!
     private MentoringReservation reservation;
 
-    private boolean IsReported;
+    @Builder.Default
+    private boolean IsReported = false;
 }

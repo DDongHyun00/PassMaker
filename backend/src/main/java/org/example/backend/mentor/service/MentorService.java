@@ -7,17 +7,10 @@ import org.example.backend.mentor.domain.Career;
 import org.example.backend.mentor.domain.Certification;
 import org.example.backend.mentor.domain.Field;
 import org.example.backend.mentor.domain.MentorUser;
-import org.example.backend.mentor.dto.CareerDto;
-import org.example.backend.mentor.dto.CertificationDto;
-import org.example.backend.mentor.dto.FieldDto;
 import org.example.backend.mentor.dto.MentorDto;
 import org.example.backend.mentor.dto.MentorProfileUpdateDto;
 import org.example.backend.mentor.dto.MentorUserDto;
-import org.example.backend.mentor.repository.CareerRepository;
-import org.example.backend.mentor.repository.CertificationRepository;
-import org.example.backend.mentor.repository.FieldRepository;
-import org.example.backend.mentor.repository.MentorRepository;
-import org.example.backend.reservation.repository.ReservationRepository;
+import org.example.backend.mentor.repository.*;
 import org.example.backend.review.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.example.backend.mentor.domain.MentorAvailableTime;
+import org.example.backend.mentor.dto.AvailableTimeDto;
+import org.example.backend.mentor.dto.AvailableTimeRequestDto;
+import org.example.backend.mentor.dto.MentorStatusDto;
+import org.example.backend.mentor.dto.MentorStatusUpdateDto;
 
 @Slf4j
 @Service
@@ -34,10 +32,10 @@ public class MentorService {
 
     private final MentorRepository mentorRepository;
     private final ReviewRepository reviewRepository;
-    private final ReservationRepository reservationRepository;
     private final FieldRepository fieldRepository; // 추가
     private final CareerRepository careerRepository; // 추가
     private final CertificationRepository certificationRepository; // 추가
+    private final MentorAvailableTimeRepository mentorAvailableTimeRepository; // MPR-005: 멘토 가용 시간 Repository 추가
 
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
@@ -158,6 +156,110 @@ public class MentorService {
                 .cert(savedMentorUser.getCertifications().stream().map(Certification::getCertDesc).collect(Collectors.joining(", ")))
                 .mentoringTitle(savedMentorUser.getMentoringTitle())
                 .hourlyRate(savedMentorUser.getHourlyRate())
+                .updatedAt(savedMentorUser.getUpdatedAt())
+                .build();
+    }
+
+    /**
+     * MPR-005: 멘토링 가능한 시간 설정
+     * 멘토가 특정 요일 및 시간대를 설정하여 가능한 시간을 등록합니다.
+     * 기존에 설정된 모든 가용 시간을 삭제하고, 새로운 가용 시간 목록으로 갱신합니다.
+     * @param mentorId 멘토의 고유 ID
+     * @param requestDto 설정할 가용 시간 목록을 포함하는 DTO
+     * @return 저장된 가용 시간 목록을 포함하는 응답 DTO
+     */
+    @Transactional
+    public AvailableTimeDto setMentorAvailableTimes(Long mentorId, AvailableTimeRequestDto requestDto) {
+        MentorUser mentorUser = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+
+        // 기존 가용 시간 모두 삭제
+        mentorAvailableTimeRepository.deleteByMentorId(mentorId);
+
+        // 새로운 가용 시간 저장
+        List<MentorAvailableTime> savedAvailableTimes = requestDto.getAvailableSlots().stream()
+                .map(slot -> MentorAvailableTime.builder()
+                        .mentor(mentorUser)
+                        .dayOfWeek(slot.getDayOfWeek())
+                        .startTime(slot.getStartTime())
+                        .endTime(slot.getEndTime())
+                        .build())
+                .map(mentorAvailableTimeRepository::save)
+                .collect(Collectors.toList());
+
+        // 응답 DTO 생성
+        List<AvailableTimeDto.SavedSlot> savedSlots = savedAvailableTimes.stream()
+                .map(at -> {
+                    AvailableTimeDto.SavedSlot slot = new AvailableTimeDto.SavedSlot();
+                    slot.setId(at.getId());
+                    slot.setDayOfWeek(at.getDayOfWeek());
+                    slot.setStartTime(at.getStartTime());
+                    slot.setEndTime(at.getEndTime());
+                    return slot;
+                })
+                .collect(Collectors.toList());
+
+        AvailableTimeDto responseDto = new AvailableTimeDto();
+        responseDto.setMentorId(mentorId);
+        responseDto.setSavedSlots(savedSlots);
+
+        return responseDto;
+    }
+
+    /**
+     * MPR-005: 멘토링 가능한 시간 조회
+     * 특정 멘토의 설정된 가용 시간 목록을 조회합니다.
+     * @param mentorId 멘토의 고유 ID
+     * @return 조회된 가용 시간 목록을 포함하는 응답 DTO
+     */
+    @Transactional(readOnly = true)
+    public AvailableTimeDto getMentorAvailableTimes(Long mentorId) {
+        // 멘토 존재 여부 확인 (선택 사항, 필요시 추가)
+        // mentorRepository.findById(mentorId).orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+
+        List<MentorAvailableTime> availableTimes = mentorAvailableTimeRepository.findByMentorId(mentorId);
+
+        List<AvailableTimeDto.SavedSlot> savedSlots = availableTimes.stream()
+                .map(at -> {
+                    AvailableTimeDto.SavedSlot slot = new AvailableTimeDto.SavedSlot();
+                    slot.setId(at.getId());
+                    slot.setDayOfWeek(at.getDayOfWeek());
+                    slot.setStartTime(at.getStartTime());
+                    slot.setEndTime(at.getEndTime());
+                    return slot;
+                })
+                .collect(Collectors.toList());
+
+        AvailableTimeDto responseDto = new AvailableTimeDto();
+        responseDto.setMentorId(mentorId);
+        responseDto.setSavedSlots(savedSlots);
+
+        return responseDto;
+    }
+
+    /**
+     * MPR-006: 멘토 상태 ON/OFF
+     * 멘토의 현재 활동 상태(모집 중 / 비활성)를 ON/OFF 전환합니다.
+     * @param mentorId 멘토의 고유 ID
+     * @param updateDto 변경할 멘토의 활동 상태를 포함하는 DTO
+     * @return 업데이트된 멘토의 활동 상태를 포함하는 응답 DTO
+     */
+    @Transactional
+    public MentorStatusDto updateMentorStatus(Long mentorId, MentorStatusUpdateDto updateDto) {
+        log.info("MPR-006: 멘토 상태 업데이트 요청 - mentorId: {}, isActive: {}", mentorId, updateDto.isActive());
+        MentorUser mentorUser = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+
+        log.info("MPR-006: 멘토 찾음 - 현재 isActive: {}", mentorUser.isActive());
+        mentorUser.setActive(updateDto.isActive()); // 멘토의 활동 상태 업데이트
+        log.info("MPR-006: isActive 설정 후 - 변경될 isActive: {}", mentorUser.isActive());
+
+        MentorUser savedMentorUser = mentorRepository.save(mentorUser);
+        log.info("MPR-006: 멘토 상태 저장 완료 - 저장된 isActive: {}", savedMentorUser.isActive());
+
+        return MentorStatusDto.builder()
+                .mentorId(savedMentorUser.getId())
+                .isActive(savedMentorUser.isActive())
                 .updatedAt(savedMentorUser.getUpdatedAt())
                 .build();
     }

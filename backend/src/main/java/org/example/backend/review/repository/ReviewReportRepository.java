@@ -1,6 +1,6 @@
 package org.example.backend.review.repository;
 
-import org.example.backend.review.dto.ReviewReport;
+import org.example.backend.review.domain.ReviewReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

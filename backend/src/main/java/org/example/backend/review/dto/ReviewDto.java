@@ -44,7 +44,7 @@ public class ReviewDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateRequest {
-        private Long id; // mentorId
+        private Long reservationId; // 예약 ID
         private int rating;
         private String content;
     }
@@ -57,8 +57,8 @@ public class ReviewDto {
         private Long reviewId;
         private Long userId;
         private String userNickname;
-        private Long storeId;
-        private String storeName;
+        private Long mentorId; // 멘토 ID
+        private String mentorNickname; // 멘토 닉네임
         private int rating;
         private String content;
         private LocalDateTime createdAt;

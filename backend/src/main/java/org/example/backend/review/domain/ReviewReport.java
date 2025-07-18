@@ -1,10 +1,10 @@
-package org.example.backend.review.dto;
+package org.example.backend.review.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
+import org.example.backend.review.dto.ReportStatus;
 import org.example.backend.user.domain.User;
-import org.example.backend.review.domain.Review;
 
 @Entity
 @Table(name = "review_report")
