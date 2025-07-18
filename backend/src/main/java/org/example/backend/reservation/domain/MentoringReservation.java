@@ -7,6 +7,7 @@ import org.example.backend.common.BaseTimeEntity;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
+import org.example.backend.room.domain.MentoringRoom;
 import org.example.backend.user.domain.User;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class MentoringReservation extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "reservation", fetch = FetchType.LAZY)
     private Payment payment;
+
+    @OneToOne(mappedBy = "reservation", fetch = FetchType.LAZY)
+    private MentoringRoom room;
 
     @NotNull
     private LocalDateTime reservationTime;

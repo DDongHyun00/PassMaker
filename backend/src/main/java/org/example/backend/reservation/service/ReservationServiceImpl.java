@@ -3,7 +3,7 @@ package org.example.backend.reservation.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.example.backend.reservation.dto.ReservationDto;
+import org.example.backend.reservation.dto.*;
 import org.example.backend.user.repository.UserRepository;
 import org.example.backend.payment.domain.Payment;
 import org.example.backend.payment.domain.PaymentStatus;
@@ -11,9 +11,6 @@ import org.example.backend.payment.domain.RefundReasonType;
 import org.example.backend.payment.service.TossRefundService;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.reservation.domain.ReservationStatus;
-import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
-import org.example.backend.reservation.dto.ReservationRequestDto;
-import org.example.backend.reservation.dto.ReservationResponseDto;
 import org.example.backend.reservation.repository.ReservationRepository;
 import org.example.backend.reservation.repository.MentoringReservationRepository;
 import org.example.backend.mentor.domain.MentorUser;
@@ -26,6 +23,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -229,4 +228,29 @@ public class ReservationServiceImpl implements ReservationService {
                         getReservationStatusColor(reservation.getStatus())))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+
+    public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        List<MentoringReservation> reservations =
+                reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT);
+
+        return reservations.stream()
+                .filter(r -> r.getRoom() != null)
+                .map(r -> {
+                    MentoringRoom room = r.getRoom();
+                    return new ReservationEnterDto(
+                            r.getReserveId(),
+                            r.getMentor().getUser().getNickname(),
+                            room.getStartedAt(),
+                            room.getEndedAt(),
+                            room.getRoomId(),
+                            room.getRoomCode()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 }

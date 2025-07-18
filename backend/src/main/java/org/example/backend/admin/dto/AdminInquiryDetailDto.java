@@ -8,13 +8,12 @@ import org.example.backend.inquiry.domain.Inquiry;
 import org.example.backend.inquiry.domain.InquiryStatus;
 import org.example.backend.inquiry.domain.InquiryType;
 
-import static org.example.backend.inquiry.domain.InquiryType.Mentoring;
 
 @Getter
 @Builder
 @AllArgsConstructor
 public class AdminInquiryDetailDto {
-    private int id;
+    private Long id;
     private String inquirer;
     private String title;
     private String content;
@@ -40,10 +39,10 @@ public class AdminInquiryDetailDto {
 
     private static String translateType(InquiryType type) {
         return switch (type) {
-            case Mentoring -> "멘토링";
-            case Account -> "계정";
-            case Payment -> "결제";
-            case Etc -> "기타";
+            case MENTORING-> "멘토링";
+            case ACCOUNT -> "계정";
+            case PAYMENT -> "결제";
+            case ETC -> "기타";
         };
     }
 

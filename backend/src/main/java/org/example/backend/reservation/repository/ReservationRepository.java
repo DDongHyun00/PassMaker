@@ -2,6 +2,7 @@ package org.example.backend.reservation.repository;
 
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.mentor.domain.MentorUser;
+import org.example.backend.reservation.domain.ReservationStatus;
 import org.example.backend.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,4 +18,5 @@ public interface ReservationRepository extends JpaRepository<MentoringReservatio
   boolean existsByMentorAndReservationTime(MentorUser mentor, LocalDateTime reservationTime);
   List<MentoringReservation> findByMentor(MentorUser mentor);
   List<MentoringReservation> findByUser(User user);
+  List<MentoringReservation> findByUserAndStatus(User user, ReservationStatus status);
 }

@@ -2,14 +2,10 @@ package org.example.backend.reservation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.auth.domain.CustomUserDetails;
-import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
-import org.example.backend.reservation.dto.ReservationActionRequestDTO;
-import org.example.backend.reservation.dto.ReservationDto;
-import org.example.backend.reservation.dto.ReservationRequestDto;
-import org.example.backend.reservation.dto.ReservationResponseDto;
+import org.example.backend.reservation.dto.*;
 import org.example.backend.reservation.repository.MentoringReservationRepository;
-import org.example.backend.reservation.dto.ReservationCancelRequestDto; // 추가된 import
 import org.example.backend.reservation.service.ReservationService;
+import org.example.backend.reservation.service.ReservationServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +23,7 @@ public class ReservationController {
 
   private final ReservationService reservationService;
   private final MentoringReservationRepository mentoringReservationRepository;
+  private final ReservationServiceImpl reservationServiceImpl;
 
   @PostMapping
   public ResponseEntity<ReservationResponseDto> createReservation(
@@ -119,4 +116,16 @@ public class ReservationController {
     }
     return ResponseEntity.ok("예약 가능");
   }
+
+
+  @GetMapping("/enterable")
+  public ResponseEntity<List<ReservationEnterDto>> getEnterableReservations(
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    List<ReservationEnterDto> reservations =
+            reservationServiceImpl.getAcceptedReservationsWithRoom(userDetails.getUserId());
+
+    return ResponseEntity.ok(reservations);
+  }
+
 }

@@ -14,7 +14,7 @@ import org.example.backend.user.domain.User;
 public class Inquiry extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -27,8 +27,8 @@ public class Inquiry extends BaseTimeEntity {
     private String inquiryContent;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
     @Builder.Default
+    @Column(nullable = false, length = 20)
     private InquiryStatus inquiryStatus = InquiryStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
