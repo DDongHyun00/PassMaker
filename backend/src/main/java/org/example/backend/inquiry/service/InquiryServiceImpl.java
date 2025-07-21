@@ -58,6 +58,9 @@ public class InquiryServiceImpl implements InquiryService {
                 .inquiryContent(inquiry.getInquiryContent())
                 .inquiryType(inquiry.getInquiryType())
                 .createdAt(inquiry.getCreatedAt())
+                .respondTitle(inquiry.getRespondTitle())
+                .respondContent(inquiry.getRespondContent())
+                .updatedAt(inquiry.getUpdatedAt())
                 .build();
     }
 

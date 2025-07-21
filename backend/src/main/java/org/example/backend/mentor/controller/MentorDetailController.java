@@ -64,7 +64,7 @@ public class MentorDetailController {
         MentorDetailResponseDto dto = MentorDetailResponseDto.builder()
                 .mentorId(mentorUser.getId())
                 .nickname(user.getNickname())
-                .thumbnail(mentorUser.getThumbnail())
+                .thumbnail(mentorUser.getUser().getThumbnail())
                 .intro(mentorUser.getIntro())
                 .mentoringTitle(mentorUser.getMentoringTitle())
                 .hourlyRate(mentorUser.getHourlyRate())

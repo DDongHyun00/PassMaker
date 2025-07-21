@@ -16,4 +16,8 @@ public class InquiryResponseDto {
     private String inquiryContent;
     private InquiryType inquiryType;
     private LocalDateTime createdAt;
+
+    private String respondTitle;
+    private String respondContent;
+    private LocalDateTime updatedAt;
 }
