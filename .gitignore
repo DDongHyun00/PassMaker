@@ -64,7 +64,6 @@ frontend/.vite/
 # ========================
 # 🐳 Docker & 빌드 이미지 관련
 # ========================
-**/Dockerfile
 docker-compose.yml
 **/.dockerignore
 
