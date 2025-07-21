@@ -72,8 +72,8 @@ public class MentorController {
     @GetMapping("/me/profile")
     public ResponseEntity<MentorProfileResponseDto> getMentorProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long mentorId = userDetails.getUserId();
-        MentorProfileResponseDto profile = mentorService.getMentorProfile(mentorId);
+        Long userId = userDetails.getUserId(); // 변수명을 mentorId -> userId로 변경
+        MentorProfileResponseDto profile = mentorService.getMentorProfile(userId);
         return ResponseEntity.ok(profile);
     }
 
