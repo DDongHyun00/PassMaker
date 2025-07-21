@@ -52,9 +52,14 @@ public class MentorService {
     /**
      * [수정] 현재 로그인한 멘토의 프로필 설정 정보를 조회합니다.
      */
-    public MentorProfileResponseDto getMentorProfile(Long mentorId) {
-        MentorUser mentorUser = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+    public MentorProfileResponseDto getMentorProfile(Long userId) { // 파라미터를 mentorId -> userId로 변경
+        // userId를 사용하여 User 엔티티 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다. userId=" + userId));
+
+        // User 엔티티를 사용하여 MentorUser 조회
+        MentorUser mentorUser = mentorRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저에 연결된 멘토 정보를 찾을 수 없습니다. userId=" + userId));
 
         List<FieldDto> fields = mentorUser.getFields().stream()
                 .map(f -> new FieldDto(f.getFieldName()))
