@@ -98,9 +98,9 @@ jobs:
 
       - name: Docker Build & Push
         run: |
-          cd backend
-          docker build -t ${{ secrets.DOCKER_USER }}/passmaker-be:latest .
+          docker build -t ${{ secrets.DOCKER_USER }}/passmaker-be:latest -f backend/Dockerfile backend
           docker push ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+  
 
   deploy:
     needs: build
