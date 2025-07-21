@@ -2,7 +2,6 @@ package org.example.backend.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.mentor.domain.MentorUser;
-import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.review.domain.Review;
 import org.example.backend.review.dto.ReviewDto;
 import org.example.backend.review.repository.ReviewRepository;

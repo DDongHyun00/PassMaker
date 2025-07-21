@@ -7,6 +7,7 @@ import org.example.backend.mentor.dto.MentorDto;
 import org.example.backend.mentor.dto.MentorProfileUpdateDto;
 import org.example.backend.mentor.dto.MentorSimpleDto;
 import org.example.backend.mentor.dto.MentorUserDto;
+import org.example.backend.mentor.dto.MentorProfileResponseDto; // [수정] 응답 DTO import 추가
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.mentor.service.MentorService;
 import org.example.backend.mentor.service.MentorReservationService; // 추가
@@ -64,6 +65,17 @@ public class MentorController {
      * @param userDetails 현재 인증된 멘토의 정보
      * @return 업데이트된 멘토 프로필 정보
      */
+
+    /**
+     * [추가] 현재 로그인한 멘토의 프로필 설정 정보를 조회합니다.
+     */
+    @GetMapping("/me/profile")
+    public ResponseEntity<MentorProfileResponseDto> getMentorProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long mentorId = userDetails.getUserId();
+        MentorProfileResponseDto profile = mentorService.getMentorProfile(mentorId);
+        return ResponseEntity.ok(profile);
+    }
 
     @PutMapping("/me/edit-profile")
     public ResponseEntity<MentorUserDto> updateMentorProfile(
