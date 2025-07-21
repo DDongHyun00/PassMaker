@@ -3,7 +3,7 @@ name: passmaker-backend-auto-deploy
 on:
   push:
     branches:
-      - dev
+      - pass85
 
 jobs:
   build:
@@ -117,7 +117,7 @@ jobs:
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
-            
+
 
 #name: passmaker-backend-auto-deploy
 #
