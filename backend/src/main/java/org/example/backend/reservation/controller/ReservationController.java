@@ -25,15 +25,16 @@ public class ReservationController {
   private final MentoringReservationRepository mentoringReservationRepository;
   private final ReservationServiceImpl reservationServiceImpl;
 
-  @PostMapping
-  public ResponseEntity<ReservationResponseDto> createReservation(
-      @RequestBody ReservationRequestDto requestDto,
-      @AuthenticationPrincipal CustomUserDetails userDetails
-  ) {
-    Long userId = userDetails.getUserId();
-    ReservationResponseDto response = reservationService.createReservation(requestDto, userId);
-    return ResponseEntity.ok(response);
-  }
+  // ❌ 예약 먼저 저장하는 API 제거 (결제 성공 후에만 예약 저장하도록 일원화)
+//  @PostMapping
+//  public ResponseEntity<ReservationResponseDto> createReservation(
+//      @RequestBody ReservationRequestDto requestDto,
+//      @AuthenticationPrincipal CustomUserDetails userDetails
+//  ) {
+//    Long userId = userDetails.getUserId();
+//    ReservationResponseDto response = reservationService.createReservation(requestDto, userId);
+//    return ResponseEntity.ok(response);
+//  }
 
   @PatchMapping("/{reservationId}/approve")
   public ResponseEntity<ApproveReservationResponseDTO> approve(@PathVariable Long reservationId) {
