@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface MentoringReservationRepository extends JpaRepository<MentoringReservation, Long> {
 
@@ -29,4 +30,6 @@ public interface MentoringReservationRepository extends JpaRepository<MentoringR
       @Param("mentorId") Long mentorId,
       @Param("reservationTime") LocalDateTime reservationTime
   );
+  Optional<MentoringReservation> findByMentorIdAndReservationTime(Long mentorId, LocalDateTime time);
+
 }

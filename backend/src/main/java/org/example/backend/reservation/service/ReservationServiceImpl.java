@@ -40,51 +40,51 @@ public class ReservationServiceImpl implements ReservationService {
     private final MentoringReservationRepository mentoringReservationRepository;
 
 
-    @Override
-    @Transactional
-    public ReservationResponseDto createReservation(ReservationRequestDto requestDto, Long userId) {
-
-        // 1. 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        // 2. 멘토 조회
-        MentorUser mentor = mentorUserRepository.findById(requestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멘토입니다."));
-
-        // 3. 예약 시간 중복 체크
-        boolean isOverlapping = reservationRepository.existsByMentorAndReservationTime(
-                mentor, requestDto.getReservationTime());
-        if (isOverlapping) {
-            throw new IllegalStateException("이미 예약된 시간입니다.");
-        }
-    if (mentor.getUser().getUserId().equals(user.getUserId())) {
-      throw new AccessDeniedException("자기 자신에게는 예약할 수 없습니다.");
-    }
-
-        // 4. 예약 저장
-        MentoringReservation reservation = MentoringReservation.builder()
-                .mentor(mentor)
-                .user(user)
-                .reservationTime(requestDto.getReservationTime())
-                .status(ReservationStatus.WAITING)
-                .build();
-
-        MentoringReservation saved = reservationRepository.save(reservation);
-
-        // 5. 응답 DTO 생성
-        return new ReservationResponseDto(
-                saved.getReserveId(),                            // 1. 예약 ID
-                saved.getMentor().getId(),                       // 2. 멘토 ID
-                saved.getUser().getUserId(),                     // 3. 멘티 ID
-                saved.getMentor().getUser().getNickname(),       // 4. 멘토 이름
-                saved.getReservationTime(),                      // 5. 예약 시간
-                saved.getStatus(),                               // 6. 예약 상태
-                saved.getPayment() != null
-                        ? saved.getPayment().getStatus().name()      // 7. 결제 상태
-                        : "UNPAID"
-        );
-    }
+//    @Override
+//    @Transactional
+//    public ReservationResponseDto createReservation(ReservationRequestDto requestDto, Long userId) {
+//
+//        // 1. 사용자 조회
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+//
+//        // 2. 멘토 조회
+//        MentorUser mentor = mentorUserRepository.findById(requestDto.getId())
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멘토입니다."));
+//
+//        // 3. 예약 시간 중복 체크
+//        boolean isOverlapping = reservationRepository.existsByMentorAndReservationTime(
+//                mentor, requestDto.getReservationTime());
+//        if (isOverlapping) {
+//            throw new IllegalStateException("이미 예약된 시간입니다.");
+//        }
+//    if (mentor.getUser().getUserId().equals(user.getUserId())) {
+//      throw new AccessDeniedException("자기 자신에게는 예약할 수 없습니다.");
+//    }
+//
+//        // 4. 예약 저장
+//        MentoringReservation reservation = MentoringReservation.builder()
+//                .mentor(mentor)
+//                .user(user)
+//                .reservationTime(requestDto.getReservationTime())
+//                .status(ReservationStatus.WAITING)
+//                .build();
+//
+//        MentoringReservation saved = reservationRepository.save(reservation);
+//
+//        // 5. 응답 DTO 생성
+//        return new ReservationResponseDto(
+//                saved.getReserveId(),                            // 1. 예약 ID
+//                saved.getMentor().getId(),                       // 2. 멘토 ID
+//                saved.getUser().getUserId(),                     // 3. 멘티 ID
+//                saved.getMentor().getUser().getNickname(),       // 4. 멘토 이름
+//                saved.getReservationTime(),                      // 5. 예약 시간
+//                saved.getStatus(),                               // 6. 예약 상태
+//                saved.getPayment() != null
+//                        ? saved.getPayment().getStatus().name()      // 7. 결제 상태
+//                        : "UNPAID"
+//        );
+//    }
 
 
   @Override
