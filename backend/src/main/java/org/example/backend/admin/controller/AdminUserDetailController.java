@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminUserDetailController {
     private final AdminUserDetailRepository adminUserRepository;
