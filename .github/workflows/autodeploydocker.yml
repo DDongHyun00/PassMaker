@@ -22,50 +22,67 @@ jobs:
       - name: Create application-secret.properties
         run: |
           mkdir -p backend/src/main/resources
-          cat <<EOF > ./backend/src/main/resources/application-secret.properties
-          spring.datasource.url=\${RDS_ENDPOINT}
-          spring.datasource.username=\${RDS_USERNAME}
-          spring.datasource.password=\${RDS_PASSWORD}
+          cat <<EOF > backend/src/main/resources/application-secret.properties
+          spring.datasource.url=${RDS_ENDPOINT}
+          spring.datasource.username=${RDS_USERNAME}
+          spring.datasource.password=${RDS_PASSWORD}
           spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=true
           spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
-          jwt.secret=\${JWT_SECRET}
+          jwt.secret=${JWT_SECRET}
           jwt.access-token-expiration=900000
           jwt.refresh-token-expiration=604800000
 
-          KAKAO_CLIENT_ID=\${KAKAO_CLIENT_ID}
+          KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
           KAKAO_USER_INFO_URL=https://kapi.kakao.com/v2/user/me
-          KAKAO_REDIRECT_URI=\${KAKAO_REDIRECT_URI}
+          KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
           KAKAO_REQUEST_URI=https://kauth.kakao.com/oauth/token
 
-          GOOGLE_CLIENT_ID=\${GOOGLE_CLIENT_ID}
-          GOOGLE_CLIENT_SECRET=\${GOOGLE_CLIENT_SECRET}
-          GOOGLE_REDIRECT_URI=\${GOOGLE_REDIRECT_URI}
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+          GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
           GOOGLE_REQUEST_URI=https://oauth2.googleapis.com/token
           GOOGLE_USER_INFO_URL=https://www.googleapis.com/oauth2/v3/userinfo
           GOOGLE_TOKEN_URL=https://oauth2.googleapis.com/token
-          GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth?client_id=\${GOOGLE_CLIENT_ID}&redirect_uri=\${GOOGLE_REDIRECT_URI}&response_type=code&scope=profile%20email&access_type=offline&prompt=consent
+          GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=profile%20email&access_type=offline&prompt=consent
 
-          toss.secret-key=\${TOSS_SECRET_KEY}
+          toss.secret-key=${TOSS_SECRET_KEY}
 
           spring.mail.host=smtp.naver.com
           spring.mail.port=465
-          spring.mail.username=\${MAIL_USERNAME}
-          spring.mail.password=\${MAIL_PASSWORD}
-          naverSetFrom=\${MAIL_USERNAME}
+          spring.mail.username=${MAIL_USERNAME}
+          spring.mail.password=${MAIL_PASSWORD}
+          naverSetFrom=${MAIL_USERNAME}
           spring.mail.protocol=smtps
           spring.mail.properties.mail.smtp.auth=true
           spring.mail.properties.mail.smtp.ssl.enable=true
 
-          cloud.aws.credentials.accessKey=\${AWS_ACCESS_KEY_ID}
-          cloud.aws.credentials.secretKey=\${AWS_SECRET_ACCESS_KEY}
-          cloud.aws.region.static=\${AWS_REGION}
-          cloud.aws.s3.bucket=\${S3_BUCKET}
+          cloud.aws.credentials.accessKey=${AWS_ACCESS_KEY_ID}
+          cloud.aws.credentials.secretKey=${AWS_SECRET_ACCESS_KEY}
+          cloud.aws.region.static=${AWS_REGION}
+          cloud.aws.s3.bucket=${S3_BUCKET}
           cloud.aws.stack.auto=false
           EOF
+        env:
+          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+          RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          TOSS_SECRET_KEY: ${{ secrets.TOSS_SECRET_KEY }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
 
       - name: Gradle Build
         run: |
@@ -118,6 +135,7 @@ jobs:
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+
 
 
 #name: passmaker-backend-auto-deploy
