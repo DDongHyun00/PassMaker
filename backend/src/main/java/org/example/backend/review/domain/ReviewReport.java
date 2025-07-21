@@ -3,7 +3,6 @@ package org.example.backend.review.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.backend.common.BaseTimeEntity;
-import org.example.backend.review.dto.ReportStatus;
 import org.example.backend.user.domain.User;
 
 @Entity
@@ -37,4 +36,9 @@ public class ReviewReport extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ReportStatus status = ReportStatus.PENDING;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ReportCategory category = ReportCategory.Etc;
 }
