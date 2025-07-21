@@ -110,12 +110,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2 (Private Backend Server)
+      - name: Deploy to Private EC2 via Bastion
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.PRIVATE_EC2_HOST }}            # 프라이빗 EC2의 Private IP
+          username: ${{ secrets.PRIVATE_EC2_USER }}
+          key: ${{ secrets.PRIVATE_EC2_KEY }}
+
+          # Bastion (퍼블릭 EC2) 설정
+          proxy_host: ${{ secrets.EC2_HOST }}           # 퍼블릭 EC2의 Public IP
+          proxy_username: ${{ secrets.EC2_USER }}
+          proxy_key: ${{ secrets.EC2_KEY }}
+
+          # 실행할 스크립트
           script: |
             docker pull ${{ secrets.DOCKER_USER }}/passmaker-be:latest
             docker stop passmaker-be || true
@@ -138,6 +145,7 @@ jobs:
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
               -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+
 
 
 
