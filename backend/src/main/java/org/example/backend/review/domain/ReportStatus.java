@@ -1,4 +1,4 @@
-package org.example.backend.review.dto;
+package org.example.backend.review.domain;
 
 public enum ReportStatus {
     PENDING,    // 대기
