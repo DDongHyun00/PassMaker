@@ -90,6 +90,9 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build
 
+      - name: Check build/libs contents
+        run: ls -al backend/build/libs
+
       - name: Docker Login
         uses: docker/login-action@v3
         with:
