@@ -23,7 +23,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/reservations/**").authenticated()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/mentors/**").permitAll()
+                .requestMatchers("/api/reservations/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/auth/me").authenticated()
+                .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/logout", "/api/auth/reissue").permitAll()
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 이거 중요!

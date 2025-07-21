@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.repository.MentorUserRepository;
 import org.example.backend.review.domain.Review;
-import org.example.backend.review.dto.ReviewActionDto;
 import org.example.backend.review.dto.ReviewDto;
 import org.example.backend.review.repository.ReviewRepository;
 import org.example.backend.review.service.ReviewService; // 기존 ReviewService
@@ -86,11 +85,11 @@ public class ReviewController {
      * @return 성공 시 200 OK 응답
      */
     @PostMapping("/reviews/report")
-    public ResponseEntity<Void> reportReview(
+    public ResponseEntity<String> reportReview(
             @RequestBody ReviewReportDto reportDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long reporterUserId = userDetails.getUserId();
         reviewService.reportReview(reportDto, reporterUserId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("리뷰가 성공적으로 신고되었습니다.");
     }
 }

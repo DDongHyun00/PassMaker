@@ -10,6 +10,14 @@ import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.mentor.dto.MentorDto;
 import org.example.backend.mentor.dto.MentorProfileUpdateDto;
 import org.example.backend.mentor.dto.MentorUserDto;
+import org.example.backend.mentor.dto.MentorProfileResponseDto;
+import org.example.backend.mentor.dto.CareerDto;
+import org.example.backend.mentor.dto.CertificationDto;
+import org.example.backend.mentor.dto.FieldDto;
+import org.example.backend.mentor.dto.MentorProfileResponseDto; // [수정] 응답 DTO import 추가
+import org.example.backend.mentor.dto.CareerDto; // [수정] DTO import 추가
+import org.example.backend.mentor.dto.CertificationDto; // [수정] DTO import 추가
+import org.example.backend.mentor.dto.FieldDto; // [수정] DTO import 추가
 import org.example.backend.mentor.repository.*;
 import org.example.backend.review.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +31,8 @@ import org.example.backend.mentor.dto.AvailableTimeDto;
 import org.example.backend.mentor.dto.AvailableTimeRequestDto;
 import org.example.backend.mentor.dto.MentorStatusDto;
 import org.example.backend.mentor.dto.MentorStatusUpdateDto;
+import org.example.backend.user.domain.User; // [추가] User 임포트
+import org.example.backend.user.repository.UserRepository; // [추가] UserRepository 임포트
 
 @Slf4j
 @Service
@@ -36,6 +46,38 @@ public class MentorService {
     private final CareerRepository careerRepository; // 추가
     private final CertificationRepository certificationRepository; // 추가
     private final MentorAvailableTimeRepository mentorAvailableTimeRepository; // MPR-005: 멘토 가용 시간 Repository 추가
+    private final UserRepository userRepository; // [추가] UserRepository 주입
+
+
+    /**
+     * [수정] 현재 로그인한 멘토의 프로필 설정 정보를 조회합니다.
+     */
+    public MentorProfileResponseDto getMentorProfile(Long mentorId) {
+        MentorUser mentorUser = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+
+        List<FieldDto> fields = mentorUser.getFields().stream()
+                .map(f -> new FieldDto(f.getFieldName()))
+                .collect(Collectors.toList());
+
+        List<CareerDto> careers = mentorUser.getCareers().stream()
+                .map(c -> new CareerDto(c.getCompany(), c.getPeriod()))
+                .collect(Collectors.toList());
+
+        List<CertificationDto> certifications = mentorUser.getCertifications().stream()
+                .map(c -> new CertificationDto(c.getCertDesc()))
+                .collect(Collectors.toList());
+
+        return MentorProfileResponseDto.builder()
+                .thumbnail(mentorUser.getThumbnail())
+                .intro(mentorUser.getIntro())
+                .mentoringTitle(mentorUser.getMentoringTitle())
+                .hourlyRate(mentorUser.getHourlyRate())
+                .fields(fields)
+                .careers(careers)
+                .certifications(certifications)
+                .build();
+    }
 
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
@@ -145,6 +187,21 @@ public class MentorService {
             });
         }
 
+        // ✨ 5. MentorAvailableTime 업데이트 추가
+        mentorAvailableTimeRepository.deleteByMentorId(mentorId); // 기존 시간 삭제
+        if (updateDto.getAvailableTimes() != null) {
+            updateDto.getAvailableTimes().forEach(slot -> {
+                MentorAvailableTime availableTime = MentorAvailableTime.builder()
+                        .mentor(mentorUser)
+                        .dayOfWeek(slot.getDayOfWeek())
+                        .startTime(slot.getStartTime())
+                        .endTime(slot.getEndTime())
+                        .build();
+                mentorAvailableTimeRepository.save(availableTime);
+            });
+        }
+
+
         MentorUser savedMentorUser = mentorRepository.save(mentorUser);
 
         // 응답 DTO 변환
@@ -245,10 +302,16 @@ public class MentorService {
      * @return 업데이트된 멘토의 활동 상태를 포함하는 응답 DTO
      */
     @Transactional
-    public MentorStatusDto updateMentorStatus(Long mentorId, MentorStatusUpdateDto updateDto) {
-        log.info("MPR-006: 멘토 상태 업데이트 요청 - mentorId: {}, isActive: {}", mentorId, updateDto.isActive());
-        MentorUser mentorUser = mentorRepository.findById(mentorId)
-                .orElseThrow(() -> new IllegalArgumentException("멘토를 찾을 수 없습니다."));
+    public MentorStatusDto updateMentorStatus(Long userId, MentorStatusUpdateDto updateDto) { // [수정] mentorId -> userId로 파라미터 변경
+        log.info("MPR-006: 멘토 상태 업데이트 요청 - userId: {}, isActive: {}", userId, updateDto.isActive());
+
+        // [수정] userId를 사용하여 User 엔티티 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다. userId=" + userId));
+
+        // [수정] User 엔티티를 사용하여 MentorUser 조회
+        MentorUser mentorUser = mentorRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저에 연결된 멘토 정보를 찾을 수 없습니다. userId=" + userId));
 
         log.info("MPR-006: 멘토 찾음 - 현재 isActive: {}", mentorUser.isActive());
         mentorUser.setActive(updateDto.isActive()); // 멘토의 활동 상태 업데이트
