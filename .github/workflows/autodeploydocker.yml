@@ -21,6 +21,7 @@ jobs:
 
       - name: Create application-secret.properties
         run: |
+          mkdir -p backend/src/main/resources
           cat <<EOF > ./backend/src/main/resources/application-secret.properties
           spring.datasource.url=\${RDS_ENDPOINT}
           spring.datasource.username=\${RDS_USERNAME}
