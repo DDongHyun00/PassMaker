@@ -1,0 +1,175 @@
+name: passmaker-backend-auto-deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Create application-secret.properties
+        run: |
+          cat <<EOF > ./backend/src/main/resources/application-secret.properties
+          spring.datasource.url=\${RDS_ENDPOINT}
+          spring.datasource.username=\${RDS_USERNAME}
+          spring.datasource.password=\${RDS_PASSWORD}
+          spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+          spring.jpa.hibernate.ddl-auto=update
+          spring.jpa.show-sql=true
+          spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+          jwt.secret=\${JWT_SECRET}
+          jwt.access-token-expiration=900000
+          jwt.refresh-token-expiration=604800000
+
+          KAKAO_CLIENT_ID=\${KAKAO_CLIENT_ID}
+          KAKAO_USER_INFO_URL=https://kapi.kakao.com/v2/user/me
+          KAKAO_REDIRECT_URI=\${KAKAO_REDIRECT_URI}
+          KAKAO_REQUEST_URI=https://kauth.kakao.com/oauth/token
+
+          GOOGLE_CLIENT_ID=\${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=\${GOOGLE_CLIENT_SECRET}
+          GOOGLE_REDIRECT_URI=\${GOOGLE_REDIRECT_URI}
+          GOOGLE_REQUEST_URI=https://oauth2.googleapis.com/token
+          GOOGLE_USER_INFO_URL=https://www.googleapis.com/oauth2/v3/userinfo
+          GOOGLE_TOKEN_URL=https://oauth2.googleapis.com/token
+          GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth?client_id=\${GOOGLE_CLIENT_ID}&redirect_uri=\${GOOGLE_REDIRECT_URI}&response_type=code&scope=profile%20email&access_type=offline&prompt=consent
+
+          toss.secret-key=\${TOSS_SECRET_KEY}
+
+          spring.mail.host=smtp.naver.com
+          spring.mail.port=465
+          spring.mail.username=\${MAIL_USERNAME}
+          spring.mail.password=\${MAIL_PASSWORD}
+          naverSetFrom=\${MAIL_USERNAME}
+          spring.mail.protocol=smtps
+          spring.mail.properties.mail.smtp.auth=true
+          spring.mail.properties.mail.smtp.ssl.enable=true
+
+          cloud.aws.credentials.accessKey=\${AWS_ACCESS_KEY_ID}
+          cloud.aws.credentials.secretKey=\${AWS_SECRET_ACCESS_KEY}
+          cloud.aws.region.static=\${AWS_REGION}
+          cloud.aws.s3.bucket=\${S3_BUCKET}
+          cloud.aws.stack.auto=false
+          EOF
+
+      - name: Gradle Build
+        run: |
+          cd backend
+          chmod +x ./gradlew
+          ./gradlew clean build
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Docker Build & Push
+        run: |
+          cd backend
+          docker build -t ${{ secrets.DOCKER_USER }}/passmaker-be:latest .
+          docker push ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 (Private Backend Server)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+            docker stop passmaker-be || true
+            docker rm passmaker-be || true
+            docker run -d --name passmaker-be \
+              -e RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \
+              -e RDS_USERNAME=${{ secrets.RDS_USERNAME }} \
+              -e RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+              -e KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }} \
+              -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+              -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+              -e GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }} \
+              -e TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }} \
+              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              -e AWS_REGION=${{ secrets.AWS_REGION }} \
+              -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
+              -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+            
+
+#name: passmaker-backend-auto-deploy
+#
+#on:
+#  push:
+#    branches:
+#      - dev
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Git Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Setup JDK 17
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: 17
+#
+#      - name: Gradle Build
+#        run: |
+#          chmod +x ./gradlew
+#          ./gradlew clean build
+#
+#      - name: Docker Login
+#        uses: docker/login-action@v3
+#        with:
+#          username: ${{ secrets.DOCKER_USER }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#
+#      - name: Docker Build & Push
+#        run: |
+#          cd backend
+#          docker build -t ${{ secrets.DOCKER_USER }}/passmaker-be:latest .
+#          docker push ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+#
+#  deploy:
+#    needs: build
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Deploy to EC2 (Private Backend Server)
+#        uses: appleboy/ssh-action@v1.0.3
+#        with:
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          key: ${{ secrets.EC2_KEY }}
+#          script: |
+#            docker pull ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+#            docker stop passmaker-be || true
+#            docker rm passmaker-be || true
+#            docker run -d --name passmaker-be -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
