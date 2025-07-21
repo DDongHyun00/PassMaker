@@ -16,7 +16,6 @@
 # ========================
 # ⚙️ 빌드 & 캐시 디렉토리 (Spring + Gradle)
 # ========================
-**/build/
 **/.gradle/
 **/out/
 **/target/
@@ -100,4 +99,3 @@ deploy.log
 
 # Generated files
 **/generated/
-build/generated/
