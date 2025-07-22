@@ -98,14 +98,13 @@ public class MentoringRoomServiceImpl implements MentoringRoomService {
     @Override
     public void closeRoom(Long roomId) {
         MentoringRoom room = mentoringRoomRepository.findById(roomId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다: " + roomId));
 
-        // (선택) 방 상태 변경 로직 예시
-        // room.setStatus(RoomStatus.CLOSED);
-
+        // 1) 실제 종료 시간 업데이트
+        room.setEndedAt(LocalDateTime.now());
         mentoringRoomRepository.save(room);
 
-        // ✅ STT 전체 요약 실행
+        // 2) 파트별 STT 기록을 모아 요약 실행
         sttService.summarize(roomId);
     }
 
