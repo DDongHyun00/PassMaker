@@ -23,4 +23,5 @@ public interface ReservationService {
    * ✅ 멘토 ID + 예약 시간 기준 중복 예약 여부 확인
    */
   boolean checkDuplicateReservation(Long mentorId, LocalDateTime reservationTime);
+  void cancelReservation(Long reservationId);
 }
