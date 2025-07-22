@@ -1,3 +1,4 @@
+// src/main/java/org/example/backend/stt/entity/MentoringRecord.java
 package org.example.backend.stt.entity;
 
 import jakarta.persistence.*;
@@ -16,7 +17,8 @@ public class MentoringRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // ▶ 1:N 관계로 변경: 한 방(room)에 여러 STT 레코드 저장 가능
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private MentoringRoom room;
 
