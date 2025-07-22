@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FieldDto {
+public class
+FieldDto {
     private String fieldName;
 }

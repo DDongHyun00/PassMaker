@@ -23,8 +23,11 @@ public class MentorApply extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Size(max = 255)
+    @Column(columnDefinition = "TEXT") // [수정] 자기소개 필드를 TEXT 타입으로 변경하여 길이 제한 제거
     private String intro;
+
+    @Size(max = 255) // [추가] 멘토링 제목 필드
+    private String mentoringTitle;
 
     @NotNull
     @Enumerated(EnumType.STRING)

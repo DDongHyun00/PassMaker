@@ -14,6 +14,7 @@ import org.example.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +40,7 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
         MentorApply mentorApply = MentorApply.builder()
                 .user(user)
                 .intro(requestDto.getIntro())
+                .mentoringTitle(requestDto.getMentoringTitle()) // [추가] mentoringTitle 저장
                 .status(ApplyStatus.PENDING) // 초기 상태는 PENDING
                 .build();
 
@@ -51,19 +53,16 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
             });
         }
 
-        // careers 저장
+        // careers 저장: 구조화된 CareerDto 리스트를 처리
         if (requestDto.getCareers() != null) {
-            requestDto.getCareers().forEach(careerString -> {
-                // "회사명 (기간)" 형식에서 회사명과 기간을 파싱
-                String company = careerString;
-                String period = null;
-                int startIndex = careerString.indexOf("(");
-                int endIndex = careerString.indexOf(")");
-                if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-                    company = careerString.substring(0, startIndex).trim();
-                    period = careerString.substring(startIndex + 1, endIndex).trim();
-                }
-                applyCareerRepository.save(new org.example.backend.mentor.domain.ApplyCareer(null, savedApply, company, period));
+            requestDto.getCareers().forEach(careerDto -> {
+                // DTO에서 직접 company와 period를 가져와 ApplyCareer 엔티티를 생성하고 저장
+                applyCareerRepository.save(new org.example.backend.mentor.domain.ApplyCareer(
+                        null,
+                        savedApply,
+                        careerDto.getCompany(),
+                        careerDto.getPeriod()
+                ));
             });
         }
 
@@ -74,13 +73,19 @@ public class MentorApplicationServiceImpl implements MentorApplicationService {
             });
         }
 
+        // 응답 DTO를 생성할 때, careers 리스트를 다시 "회사명 (기간)" 형태의 문자열 리스트로 변환
+        List<String> careerStrings = requestDto.getCareers().stream()
+                .map(c -> c.getCompany() + " (" + c.getPeriod() + ")")
+                .collect(Collectors.toList());
+
         return MentorApplicationResponseDto.builder()
                 .id(savedApply.getApplyId())
                 .userId(savedApply.getUser().getUserId())
                 .intro(savedApply.getIntro())
+                .mentoringTitle(savedApply.getMentoringTitle()) // [추가] mentoringTitle 응답에 포함
                 .status(savedApply.getStatus())
                 .fields(requestDto.getFields())
-                .careers(requestDto.getCareers())
+                .careers(careerStrings) // 변환된 문자열 리스트를 설정
                 .certifications(requestDto.getCertifications())
                 .createdAt(savedApply.getCreatedAt())
                 .updatedAt(savedApply.getUpdatedAt())

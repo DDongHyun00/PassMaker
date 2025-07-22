@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/mentors/**").permitAll()
                 .requestMatchers("/api/reservations/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/auth/me").authenticated()
+                .requestMatchers("/api/mentor-applications").authenticated() // [추가] 멘토 지원 API 인증 필요
                 .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/logout", "/api/auth/reissue").permitAll()
                 .anyRequest().permitAll()
             )

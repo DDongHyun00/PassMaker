@@ -19,6 +19,7 @@ public class MentorApplicationResponseDto {
     private Long id;
     private Long userId;
     private String intro;
+    private String mentoringTitle; // [추가] 멘토링 제목 필드
     private List<String> fields;
     private List<String> careers;
     private List<String> certifications;
