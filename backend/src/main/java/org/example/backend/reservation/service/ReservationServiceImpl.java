@@ -229,28 +229,83 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-
     public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        List<MentoringReservation> reservations =
-                reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT);
+        boolean isMentor = user.isMentor();
+
+        List<MentoringReservation> reservations;
+
+        if (isMentor) {
+            // 유저 → MentorUser 조회
+            MentorUser mentor = mentorUserRepository.findByUser(user)
+                    .orElseThrow(() -> new IllegalArgumentException("멘토 정보가 없습니다."));
+
+            // mentor_id 기준으로 예약 조회
+            reservations = reservationRepository.findByMentorAndStatusIn(
+                    mentor, List.of(ReservationStatus.WAITING, ReservationStatus.ACCEPT)
+            );
+            System.out.println("현재 멘토: " + mentor.getId());
+            System.out.println("조회된 예약 수: " + reservations.size());
+        } else {
+            reservations = reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT)
+                    .stream()
+                    .filter(r -> r.getRoom() != null)
+                    .collect(Collectors.toList());
+        }
 
         return reservations.stream()
-                .filter(r -> r.getRoom() != null)
                 .map(r -> {
                     MentoringRoom room = r.getRoom();
                     return new ReservationEnterDto(
                             r.getReserveId(),
                             r.getMentor().getUser().getNickname(),
-                            room.getStartedAt(),
-                            room.getEndedAt(),
-                            room.getRoomId(),
-                            room.getRoomCode()
+                            room != null ? room.getStartedAt() : null,
+                            room != null ? room.getEndedAt() : null,
+                            room != null ? room.getRoomId() : null,
+                            room != null ? room.getRoomCode() : null,
+                            r.getStatus(),
+                            r.getReservationTime()
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+
+//    public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+//
+//        List<MentoringReservation> reservations =
+//                reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT);
+//
+//        return reservations.stream()
+//                .filter(r -> r.getRoom() != null)
+//                .map(r -> {
+//                    MentoringRoom room = r.getRoom();
+//                    return new ReservationEnterDto(
+//                            r.getReserveId(),
+//                            r.getMentor().getUser().getNickname(),
+//                            room.getStartedAt(),
+//                            room.getEndedAt(),
+//                            room.getRoomId(),
+//                            room.getRoomCode()
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+        MentoringReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        if (reservation.getStatus() != ReservationStatus.WAITING) {
+            throw new IllegalStateException("WAITING 상태만 취소할 수 있습니다.");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
     }
 
 }

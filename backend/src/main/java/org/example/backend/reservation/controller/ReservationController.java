@@ -129,4 +129,10 @@ public class ReservationController {
     return ResponseEntity.ok(reservations);
   }
 
+  @PatchMapping("/{reservationId}/cancel")
+  public ResponseEntity<Void> cancelReservation(@PathVariable Long reservationId) {
+    reservationService.cancelReservation(reservationId);
+    return ResponseEntity.ok().build();
+  }
+
 }
