@@ -87,14 +87,9 @@ public class MentorService {
 
     // ① getAllMentors 같은 퍼블릭 서비스 메서드
     public List<MentorDto> getAllMentors() {
-        List<MentorUser> mentors = mentorRepository.findAllWithUser();
-        for (MentorUser m : mentors) {
-            if (m.getUser() == null) {
-                log.error("❌ 연결된 User 없음: mentorId = {}", m.getId());
-            }
-        }
         return mentorRepository.findAllWithUser().stream()
-                .map(this::convertToDto)   // 여기서 호출
+                .filter(MentorUser::isActive) // [추가] isActive가 true인 멘토만 필터링
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
@@ -138,6 +133,7 @@ public class MentorService {
                 .thumbnail(m.getUser().getThumbnail())
                 .rating(rating)
                 .reviewCount(reviewCount)
+                .isActive(m.isActive()) // [추가] 멘토 활성화 상태 추가
                 .build();
     }
 

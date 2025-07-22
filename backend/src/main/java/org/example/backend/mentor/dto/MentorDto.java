@@ -21,4 +21,5 @@ public class MentorDto {
     private Integer hourlyRate;
     private double rating;     // 평균 평점
     private long reviewCount;  // 리뷰 개수
+    private boolean isActive; // [추가] 멘토 활성화 상태
 }

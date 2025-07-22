@@ -149,8 +149,13 @@ public class ReservationServiceImpl implements ReservationService {
             throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
         }
 
-        if (reservation.getStatus() != ReservationStatus.ACCEPT) {
-            throw new IllegalStateException("결제 완료된 예약만 취소할 수 있습니다.");
+        // [디버깅] 예약 취소 시 현재 예약 상태 및 결제 정보 확인
+        System.out.println("DEBUG: Cancelling reservation ID: " + reservationId);
+        System.out.println("DEBUG: Reservation Status: " + reservation.getStatus());
+        System.out.println("DEBUG: Payment object is null: " + (reservation.getPayment() == null));
+
+        if (reservation.getStatus() != ReservationStatus.ACCEPT && reservation.getStatus() != ReservationStatus.WAITING) {
+            throw new IllegalStateException("취소할 수 없는 예약 상태입니다. (취소는 '대기' 또는 '승인' 상태에서만 가능합니다.)");
         }
 
         if (reservation.getReservationTime().isBefore(LocalDateTime.now().plusMinutes(30))) {
@@ -158,6 +163,10 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Payment payment = reservation.getPayment();
+        if (payment == null) {
+            throw new IllegalStateException("결제 정보가 없는 예약은 취소할 수 없습니다. 관리자에게 문의하세요.");
+        }
+
         tossRefundService.refund(payment, RefundReasonType.MENTEE_CANCEL);
         payment.setStatus(PaymentStatus.CANCELLED);            // ✅ 환불 처리됨
         reservation.setStatus(ReservationStatus.CANCELLED);    // ✅ 예약 취소됨

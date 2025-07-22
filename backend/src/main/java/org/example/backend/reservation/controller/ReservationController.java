@@ -63,7 +63,7 @@ public class ReservationController {
   }
 
   // ✅ 멘티가 본인의 예약을 취소할 수 있는 API
-  @DeleteMapping("/{reservationId}/cancel") // ✅ URI 변경: /api/reservations 제거
+  @PatchMapping("/{reservationId}/cancel") // ✅ HTTP 메서드만 PATCH로 변경
   public ResponseEntity<?> cancelReservation(
       @PathVariable Long reservationId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -129,10 +129,6 @@ public class ReservationController {
     return ResponseEntity.ok(reservations);
   }
 
-  @PatchMapping("/{reservationId}/cancel")
-  public ResponseEntity<Void> cancelReservation(@PathVariable Long reservationId) {
-    reservationService.cancelReservation(reservationId);
-    return ResponseEntity.ok().build();
-  }
+  
 
 }
