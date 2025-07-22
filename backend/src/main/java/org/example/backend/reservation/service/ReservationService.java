@@ -2,9 +2,6 @@ package org.example.backend.reservation.service;
 
 import org.example.backend.reservation.dto.ApproveReservationResponseDTO;
 import org.example.backend.reservation.dto.ReservationDto;
-import org.example.backend.reservation.dto.ReservationRequestDto;
-import org.example.backend.reservation.dto.ReservationResponseDto;
-import org.example.backend.reservation.dto.ReservationCancelRequestDto;
 
 import java.time.LocalDateTime;
 
