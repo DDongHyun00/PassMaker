@@ -98,8 +98,10 @@ public class AuthServiceImpl implements AuthService {
         // 여기서 응답 DTO 생성해서 반환
         return new LoginResponseDto(
                 user.getId(),
+                user.getEmail(),
                 user.getNickname(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.isMentor()
         );
     }
 

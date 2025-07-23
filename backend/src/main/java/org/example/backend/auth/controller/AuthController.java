@@ -59,9 +59,10 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        String username = userDetails.getUsername(); // Spring Security 기본 제공
+        String username = userDetails.getUsername();// Spring Security 기본 제공
+        String nickname = userDetails.getUser().getNickname();
         boolean isMentor = userDetails.getUser().isMentor();// User 객체에서 isMentor 정보 가져오기
         Role role = userDetails.getUser().getRole();
-        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, isMentor, role));
+        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, nickname, isMentor, role));
     }
 }
