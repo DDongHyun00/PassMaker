@@ -23,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -242,26 +243,26 @@ public class ReservationServiceImpl implements ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        boolean isMentor = user.isMentor();
+        List<MentoringReservation> reservations = new ArrayList<>();
 
-        List<MentoringReservation> reservations;
+        // 1. 멘티로서: 내가 신청한 예약 중 ACCEPT + room이 존재하는 것
+        List<MentoringReservation> asMentee = reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT)
+                .stream()
+                .filter(r -> r.getRoom() != null)
+                .collect(Collectors.toList());
 
-        if (isMentor) {
-            // 유저 → MentorUser 조회
+        reservations.addAll(asMentee);
+
+        // 2. 멘토로서: 내가 수락한 예약들
+        if (user.isMentor()) {
             MentorUser mentor = mentorUserRepository.findByUser(user)
                     .orElseThrow(() -> new IllegalArgumentException("멘토 정보가 없습니다."));
 
-            // mentor_id 기준으로 예약 조회
-            reservations = reservationRepository.findByMentorAndStatusIn(
+            List<MentoringReservation> asMentor = reservationRepository.findByMentorAndStatusIn(
                     mentor, List.of(ReservationStatus.WAITING, ReservationStatus.ACCEPT)
             );
-            System.out.println("현재 멘토: " + mentor.getId());
-            System.out.println("조회된 예약 수: " + reservations.size());
-        } else {
-            reservations = reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT)
-                    .stream()
-                    .filter(r -> r.getRoom() != null)
-                    .collect(Collectors.toList());
+
+            reservations.addAll(asMentor);
         }
 
         return reservations.stream()
@@ -280,6 +281,7 @@ public class ReservationServiceImpl implements ReservationService {
                 })
                 .collect(Collectors.toList());
     }
+
 
 
 //    public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
