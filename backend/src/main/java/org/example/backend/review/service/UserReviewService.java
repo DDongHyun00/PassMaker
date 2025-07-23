@@ -30,7 +30,7 @@ public class UserReviewService {
                                 .id(review.getReservation().getUser().getId())
                                 .nickname(review.getReservation().getUser().getNickname())
                                 .build())
-                        .build()) 
+                        .build())
                 .collect(Collectors.toList());
     }
 }
