@@ -135,7 +135,7 @@ public class MentorService {
                 .intro(m.getIntro())
                 .fieldName(fields)
                 .careerDesc(careers)
-                .thumbnail(m.getThumbnail())
+                .thumbnail(m.getUser().getThumbnail())
                 .rating(rating)
                 .reviewCount(reviewCount)
                 .build();
