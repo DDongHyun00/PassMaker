@@ -44,9 +44,9 @@ public class ReservationController {
 
   @PatchMapping("/{reservationId}/action")
   public ResponseEntity<Void> handleReservationAction(
-      @PathVariable Long reservationId,
-      @RequestBody ReservationActionRequestDTO requestDto,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
+          @PathVariable Long reservationId,
+          @RequestBody ReservationActionRequestDTO requestDto,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     String action = requestDto.getAction().toLowerCase();
     if (!action.equals("accept") && !action.equals("reject")) {
@@ -54,19 +54,19 @@ public class ReservationController {
     }
 
     reservationService.handleReservationAction(
-        reservationId,
-        action,
-        userDetails.getUserId()
+            reservationId,
+            action,
+            userDetails.getUserId()
     );
 
     return ResponseEntity.ok().build();
   }
 
   // ✅ 멘티가 본인의 예약을 취소할 수 있는 API
-  @DeleteMapping("/{reservationId}/cancel") // ✅ URI 변경: /api/reservations 제거
+  @PatchMapping("/{reservationId}/cancel") // ✅ HTTP 메서드만 PATCH로 변경
   public ResponseEntity<?> cancelReservation(
-      @PathVariable Long reservationId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
+          @PathVariable Long reservationId,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     // 서비스 계층으로 위임 (예약 ID와 현재 로그인된 사용자 ID 전달)
     reservationService.cancelReservation(reservationId, userDetails.getUserId());
@@ -78,8 +78,8 @@ public class ReservationController {
   // ✅ 변경: 특정 예약 상태 조회 (MPE-001)
   @GetMapping("/{reservationId}") // ✅ URI 변경: /status 제거
   public ResponseEntity<ReservationDto> getReservationById(
-      @PathVariable Long reservationId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
+          @PathVariable Long reservationId,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
     ReservationDto reservationStatus = reservationService.getReservationStatus(reservationId, userDetails.getUserId());
     return ResponseEntity.ok(reservationStatus);
   }
@@ -87,7 +87,7 @@ public class ReservationController {
   // ✅ 추가: 전체 예약 내역 조회
   @GetMapping
   public ResponseEntity<List<ReservationDto>> getAllReservations(
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
     List<ReservationDto> reservations = reservationService.getAllReservations(userDetails.getUserId());
     return ResponseEntity.ok(reservations);
   }
@@ -95,9 +95,9 @@ public class ReservationController {
   @GetMapping("/mentor/{mentorId}/unavailable-times")
   public ResponseEntity<List<String>> getUnavailableTimes(@PathVariable Long mentorId) {
     List<String> unavailableTimes = mentoringReservationRepository.findById(mentorId)
-        .stream()
-        .map(r -> r.getReservationTime().toString())
-        .collect(Collectors.toList());
+            .stream()
+            .map(r -> r.getReservationTime().toString())
+            .collect(Collectors.toList());
 
     return ResponseEntity.ok(unavailableTimes);
   }
@@ -128,5 +128,7 @@ public class ReservationController {
 
     return ResponseEntity.ok(reservations);
   }
+
+
 
 }

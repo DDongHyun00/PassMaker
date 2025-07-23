@@ -23,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,15 +87,15 @@ public class ReservationServiceImpl implements ReservationService {
 //    }
 
 
-  @Override
-  public boolean checkDuplicateReservation(Long mentorId, LocalDateTime reservationTime) {
-    return mentoringReservationRepository.existsByMentorIdAndTimeIgnoringSeconds(mentorId, reservationTime);
-  }
+    @Override
+    public boolean checkDuplicateReservation(Long mentorId, LocalDateTime reservationTime) {
+        return mentoringReservationRepository.existsByMentorIdAndTimeIgnoringSeconds(mentorId, reservationTime);
+    }
 
-  @Transactional
-  public ApproveReservationResponseDTO approveReservationResponse(Long reservationId) {
-    MentoringReservation reservation = reservationRepository.findById(reservationId)
-        .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
+    @Transactional
+    public ApproveReservationResponseDTO approveReservationResponse(Long reservationId) {
+        MentoringReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
         if (reservation.getStatus() == ReservationStatus.ACCEPT) {
             throw new RuntimeException("이미 승인된 예약입니다.");
@@ -110,10 +111,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-  @Transactional
-  public String handleReservationAction(Long reservationId, String action, Long mentorUserId) {
-    MentoringReservation reservation = reservationRepository.findById(reservationId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
+    @Transactional
+    public String handleReservationAction(Long reservationId, String action, Long mentorUserId) {
+        MentoringReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약이 존재하지 않습니다."));
 
         if (!reservation.getMentor().getId().equals(mentorUserId)) {
             throw new AccessDeniedException("예약에 대한 권한이 없습니다.");
@@ -149,8 +150,13 @@ public class ReservationServiceImpl implements ReservationService {
             throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
         }
 
-        if (reservation.getStatus() != ReservationStatus.ACCEPT) {
-            throw new IllegalStateException("결제 완료된 예약만 취소할 수 있습니다.");
+        // [디버깅] 예약 취소 시 현재 예약 상태 및 결제 정보 확인
+        System.out.println("DEBUG: Cancelling reservation ID: " + reservationId);
+        System.out.println("DEBUG: Reservation Status: " + reservation.getStatus());
+        System.out.println("DEBUG: Payment object is null: " + (reservation.getPayment() == null));
+
+        if (reservation.getStatus() != ReservationStatus.ACCEPT && reservation.getStatus() != ReservationStatus.WAITING) {
+            throw new IllegalStateException("취소할 수 없는 예약 상태입니다. (취소는 '대기' 또는 '승인' 상태에서만 가능합니다.)");
         }
 
         if (reservation.getReservationTime().isBefore(LocalDateTime.now().plusMinutes(30))) {
@@ -158,6 +164,10 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Payment payment = reservation.getPayment();
+        if (payment == null) {
+            throw new IllegalStateException("결제 정보가 없는 예약은 취소할 수 없습니다. 관리자에게 문의하세요.");
+        }
+
         tossRefundService.refund(payment, RefundReasonType.MENTEE_CANCEL);
         payment.setStatus(PaymentStatus.CANCELLED);            // ✅ 환불 처리됨
         reservation.setStatus(ReservationStatus.CANCELLED);    // ✅ 예약 취소됨
@@ -229,28 +239,84 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-
     public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        List<MentoringReservation> reservations =
-                reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT);
+        List<MentoringReservation> reservations = new ArrayList<>();
+
+        // 1. 멘티로서: 내가 신청한 예약 중 ACCEPT + room이 존재하는 것
+        List<MentoringReservation> asMentee = reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT)
+                .stream()
+                .filter(r -> r.getRoom() != null)
+                .collect(Collectors.toList());
+
+        reservations.addAll(asMentee);
+
+        // 2. 멘토로서: 내가 수락한 예약들
+        if (user.isMentor()) {
+            MentorUser mentor = mentorUserRepository.findByUser(user)
+                    .orElseThrow(() -> new IllegalArgumentException("멘토 정보가 없습니다."));
+
+            List<MentoringReservation> asMentor = reservationRepository.findByMentorAndStatusIn(
+                    mentor, List.of(ReservationStatus.WAITING, ReservationStatus.ACCEPT)
+            );
+
+            reservations.addAll(asMentor);
+        }
 
         return reservations.stream()
-                .filter(r -> r.getRoom() != null)
                 .map(r -> {
                     MentoringRoom room = r.getRoom();
                     return new ReservationEnterDto(
                             r.getReserveId(),
                             r.getMentor().getUser().getNickname(),
-                            room.getStartedAt(),
-                            room.getEndedAt(),
-                            room.getRoomId(),
-                            room.getRoomCode()
+                            room != null ? room.getStartedAt() : null,
+                            room != null ? room.getEndedAt() : null,
+                            room != null ? room.getRoomId() : null,
+                            room != null ? room.getRoomCode() : null,
+                            r.getStatus(),
+                            r.getReservationTime()
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+
+
+//    public List<ReservationEnterDto> getAcceptedReservationsWithRoom(Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+//
+//        List<MentoringReservation> reservations =
+//                reservationRepository.findByUserAndStatus(user, ReservationStatus.ACCEPT);
+//
+//        return reservations.stream()
+//                .filter(r -> r.getRoom() != null)
+//                .map(r -> {
+//                    MentoringRoom room = r.getRoom();
+//                    return new ReservationEnterDto(
+//                            r.getReserveId(),
+//                            r.getMentor().getUser().getNickname(),
+//                            room.getStartedAt(),
+//                            room.getEndedAt(),
+//                            room.getRoomId(),
+//                            room.getRoomCode()
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+        MentoringReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        if (reservation.getStatus() != ReservationStatus.WAITING) {
+            throw new IllegalStateException("WAITING 상태만 취소할 수 있습니다.");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
     }
 
 }
