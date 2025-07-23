@@ -7,6 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginResponseDto {
     private Long userId;
+    private String username;
     private String nickname;
     private String role;
+    private boolean isMentor;
 }
