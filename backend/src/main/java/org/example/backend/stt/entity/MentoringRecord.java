@@ -4,6 +4,7 @@ package org.example.backend.stt.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.backend.room.domain.MentoringRoom;
+import org.example.backend.common.BaseTimeEntity;
 
 @Entity
 @Getter
@@ -11,7 +12,7 @@ import org.example.backend.room.domain.MentoringRoom;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MentoringRecord {
+public class MentoringRecord extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

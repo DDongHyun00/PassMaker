@@ -32,27 +32,28 @@ public class GptSummaryService {
     requestBody.put("model", "gpt-3.5-turbo");
     requestBody.put("temperature", 0.12);
     // 대략 줄당 60토큰, 최대 토큰 수 지정
-    requestBody.put("max_tokens", MAX_LINES * 60);
+    requestBody.put("max_tokens", 1000);
 
     // 2) system 메시지: STT 오류 보정, 스피커 구분, 분량·스타일 지시
-    String systemPrompt = String.format(
-        "당신은 멘토와 멘티 간의 대화를 요약하는 전문가입니다. " +
-            "Whisper STT 결과에는 발음 뭉개짐이나 누락된 단어가 있을 수 있으니, 문맥을 바탕으로 보충하되, " +
-            "확실하지 않으면 “［불확실］”로 표시하세요. " +
-            "발언자는 “멘토:”와 “멘티:”로 반드시 구분하고, " +
-            "핵심만 %d줄 이내로 알잘딱깔센 스타일—정확·간결·깔끔하게—요약해 주세요.",
-        MAX_LINES
+    String systemPrompt =
+        "당신은 취업/커리어 멘토링 대화를 요약하는 전문가입니다. " +
+            "Whisper STT 결과에는 오타, 누락, 뭉개진 표현이 있을 수 있으니 문맥을 바탕으로 자연스럽게 보정해 주세요. " +
+            "불확실한 경우는 [불확실]로 표시하세요. " +
+            "멘토와 멘티의 발화를 구분하여 '멘토:' / '멘티:' 라벨을 붙여주세요. " +
+            "중요한 조언, 해결된 고민, 인사이트 위주로 요약하며, **장황한 표현은 피하고 깔끔하고 간결하게** 정리하세요.";
+
+
+    String userPrompt = String.format(
+        "다음은 STT로 인식된 멘토링 대화입니다.\n\n" +
+            "[STT 내용 시작]\n%s\n[STT 내용 끝]\n\n" +
+            "1) 발언자를 '멘토:', '멘티:'로 구분해 주세요.\n" +
+            "2) 문맥상 어색하거나 누락된 부분은 자연스럽게 보정하세요.\n" +
+            "3) 중복된 인삿말이나 잡담은 생략하고, 중요한 핵심 위주로 요약하세요.\n" +
+            "4) 분량 제한은 없지만, 깔끔하고 읽기 좋게 정리하세요.",
+        inputText
     );
 
-    // 3) user 메시지: 실제 텍스트 + 세부 지시
-    String userPrompt = String.format(
-        "아래는 Whisper로 생성된 STT 텍스트입니다:\n\n%s\n\n" +
-            "1) “멘토:”/“멘티:” 라벨 붙이기\n" +
-            "2) 오타·뭉개진 부분 보정 (불확실 시 “［불확실］” 표시)\n" +
-            "3) 핵심을 %d줄 이내로 알잘딱깔센 스타일로 간결하게 정리",
-        inputText,
-        MAX_LINES
-    );
+
 
     requestBody.put("messages", new Object[]{
         Map.of("role", "system", "content", systemPrompt),
