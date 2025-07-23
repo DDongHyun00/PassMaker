@@ -1,11 +1,15 @@
 package org.example.backend.reservation.repository;
 
+import org.example.backend.mentor.domain.MentorUser;
 import org.example.backend.reservation.domain.MentoringReservation;
+import org.example.backend.reservation.domain.ReservationStatus;
+import org.example.backend.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface MentoringReservationRepository extends JpaRepository<MentoringReservation, Long> {
@@ -32,4 +36,9 @@ public interface MentoringReservationRepository extends JpaRepository<MentoringR
   );
   Optional<MentoringReservation> findByMentorIdAndReservationTime(Long mentorId, LocalDateTime time);
 
+  // ✅ 추가: 멘토와 예약 상태로 예약 목록 조회
+  List<MentoringReservation> findByMentorAndStatus(MentorUser mentor, ReservationStatus status);
+
+  // ✅ 추가: 멘티(사용자)와 예약 상태로 예약 목록 조회
+  List<MentoringReservation> findByUserAndStatus(User user, ReservationStatus status);
 }
