@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -109,7 +110,8 @@ public class ReservationController {
   @PostMapping("/check-duplicate")
   public ResponseEntity<?> checkDuplicateReservation(@RequestBody Map<String, String> payload) {
     Long mentorId = Long.valueOf(payload.get("mentorId"));
-    LocalDateTime reservationTime = LocalDateTime.parse(payload.get("reservationTime"));
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    LocalDateTime reservationTime = LocalDateTime.parse(payload.get("reservationTime"), formatter);
 
     boolean exists = reservationService.checkDuplicateReservation(mentorId, reservationTime);
 
