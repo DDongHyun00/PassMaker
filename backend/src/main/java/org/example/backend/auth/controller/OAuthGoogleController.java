@@ -42,7 +42,7 @@ public class OAuthGoogleController {
         String accessToken = googleTokenClient.requestAccessToken(code);
         googleOAuthService.login(accessToken, response);
 
-        response.sendRedirect("http://localhost:5173/");
+        response.sendRedirect("http://passmaker.kro.kr/");
     }
 
     /**

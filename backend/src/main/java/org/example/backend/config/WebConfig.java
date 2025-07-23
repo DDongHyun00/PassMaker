@@ -17,10 +17,13 @@ public class WebConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 더 명확하게 지정
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "http://passmaker.kro.kr"
+        ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // 쿠키 응답 노출
+        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
