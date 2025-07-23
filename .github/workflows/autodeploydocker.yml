@@ -50,6 +50,7 @@ jobs:
           GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=profile%20email&access_type=offline&prompt=consent
 
           toss.secret-key=${TOSS_SECRET_KEY}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
 
           spring.mail.host=smtp.naver.com
           spring.mail.port=465
@@ -83,6 +84,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          OPENAI_API_KEY: ${{OPENAI_API_KEY}}
 
       - name: Gradle Build
         run: |
