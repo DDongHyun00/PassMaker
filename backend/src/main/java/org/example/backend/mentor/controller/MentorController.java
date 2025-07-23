@@ -35,6 +35,11 @@ public class MentorController {
     private final MentorService mentorService;
     private final MentorReservationService mentorReservationService; // 추가
 
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("OK");
+    }
+
     @GetMapping
     public ResponseEntity<List<MentorDto>> getAllMentors() {
         return ResponseEntity.ok(mentorService.getAllMentors());
