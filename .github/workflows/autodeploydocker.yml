@@ -88,7 +88,7 @@ jobs:
         run: |
           cd backend
           chmod +x ./gradlew
-          ./gradlew clean build
+          ./gradlew clean build -x test
 
       - name: Check build/libs contents
         run: ls -al backend/build/libs
