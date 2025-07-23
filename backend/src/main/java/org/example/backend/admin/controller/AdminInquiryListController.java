@@ -18,10 +18,6 @@ public class AdminInquiryListController {
     private final AdminInquiryService adminInquiryService;
 
     @GetMapping("/inquiries")
-//    public ResponseEntity<List<AdminInquiryListDto>> getInquiries() {
-//        List<AdminInquiryListDto> list = adminInquiryService.getAllInquiries();
-//        return ResponseEntity.ok(list);
-//    }
 
     public ResponseEntity<?> getInquiries(
             @RequestParam(defaultValue = "") String searchText,
