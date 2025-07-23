@@ -15,8 +15,8 @@ import java.util.Map;
 @Slf4j
 public class GptSummaryService {
 
-  @Value("${openai.api.key}")
-  private String openAiApiKey;
+  @Value("${OPENAI_API_KEY}")
+  private String openAi_Api_Key;
 
   private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -36,7 +36,7 @@ public class GptSummaryService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setBearerAuth(openAiApiKey);
+    headers.setBearerAuth(openAi_Api_Key);
 
     HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 

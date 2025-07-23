@@ -24,6 +24,7 @@ public class MentorApply extends BaseTimeEntity {
     private User user;
 
     @Size(max = 255)
+    @Column(name = "intro", columnDefinition = "TEXT")
     private String intro;
 
     @NotNull
