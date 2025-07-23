@@ -22,8 +22,7 @@ public class AdminUserController {
     // 전체 유저 목록 조회 (관리자만)
     @GetMapping("/users")
     public ResponseEntity<?> getUsers(
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String nickname,
+            @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String role,
             @RequestParam(defaultValue = "가입일순") String sortOrder,
             @RequestParam(defaultValue = "0") int page,
@@ -42,11 +41,11 @@ public class AdminUserController {
         else if (role.equals("MENTEE")) isMentor = false;
 
         Page<AdminUserDto> userPage = adminUserRepository
-                .searchUsers(name.isBlank() ? null : name,
-                        nickname.isBlank() ? null : nickname,
+                .searchUsersByKeyword(
+                        keyword.isBlank() ? null : keyword,
                         isMentor,
-                        pageable)
-                .map(AdminUserDto::new);
+                        pageable
+                ).map(AdminUserDto::new);
 
         return ResponseEntity.ok().body(
                 Map.of(

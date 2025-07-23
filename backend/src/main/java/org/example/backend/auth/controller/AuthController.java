@@ -11,6 +11,7 @@ import org.example.backend.auth.dto.LoginResponseDto;
 import org.example.backend.auth.dto.SignupRequestDto;
 import org.example.backend.auth.dto.UserInfoResponseDto;
 import org.example.backend.auth.service.AuthService;
+import org.example.backend.user.domain.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,9 +60,8 @@ public class AuthController {
     public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
         String username = userDetails.getUsername(); // Spring Security 기본 제공
-        boolean isMentor = userDetails.getUser().isMentor(); // User 객체에서 isMentor 정보 가져오기
-        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, isMentor));
+        boolean isMentor = userDetails.getUser().isMentor();// User 객체에서 isMentor 정보 가져오기
+        Role role = userDetails.getUser().getRole();
+        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, isMentor, role));
     }
-
-
 }

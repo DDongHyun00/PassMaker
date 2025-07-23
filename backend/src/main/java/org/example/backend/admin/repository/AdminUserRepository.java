@@ -13,14 +13,17 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
 
     @Query("""
     SELECT u FROM User u
-    WHERE (:name IS NULL OR u.name LIKE %:name%)
-      AND (:nickname IS NULL OR u.nickname LIKE %:nickname%)
-      AND (:isMentor IS NULL OR u.isMentor = :isMentor)
-""")
-    Page<User> searchUsers(@Param("name") String name,
-                           @Param("nickname") String nickname,
-                           @Param("isMentor") Boolean isMentor,
-                           Pageable pageable);
+    WHERE (
+        :keyword IS NULL OR 
+        LOWER(u.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+        LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+        CAST(u.id AS string) LIKE CONCAT('%', :keyword, '%')
+    )
+    AND (:isMentor IS NULL OR u.isMentor = :isMentor)
+    """)
+    Page<User> searchUsersByKeyword(@Param("keyword") String keyword,
+                                    @Param("isMentor") Boolean isMentor,
+                                    Pageable pageable);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.isMentor = true")
     long countMentors();
