@@ -129,25 +129,25 @@ jobs:
             docker pull ${{ secrets.DOCKER_USER }}/passmaker-be:latest
             docker stop passmaker-be || true
             docker rm passmaker-be || true
-            docker run -d --name passmaker-be \
-              -e RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \
-              -e RDS_USERNAME=${{ secrets.RDS_USERNAME }} \
-              -e RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-              -e KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }} \
-              -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-              -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-              -e GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }} \
-              -e TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }} \
-              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
-              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
-              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-              -e AWS_REGION=${{ secrets.AWS_REGION }} \
-              -e S3_BUCKET=${{ secrets.S3_BUCKET }} \
-              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-              -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest
+            bash -c "docker run -d --name passmaker-be \
+              -e RDS_ENDPOINT='${{ secrets.RDS_ENDPOINT }}' \
+              -e RDS_USERNAME='${{ secrets.RDS_USERNAME }}' \
+              -e RDS_PASSWORD='${{ secrets.RDS_PASSWORD }}' \
+              -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+              -e KAKAO_CLIENT_ID='${{ secrets.KAKAO_CLIENT_ID }}' \
+              -e KAKAO_REDIRECT_URI='${{ secrets.KAKAO_REDIRECT_URI }}' \
+              -e GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID }}' \
+              -e GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}' \
+              -e GOOGLE_REDIRECT_URI='${{ secrets.GOOGLE_REDIRECT_URI }}' \
+              -e TOSS_SECRET_KEY='${{ secrets.TOSS_SECRET_KEY }}' \
+              -e MAIL_USERNAME='${{ secrets.MAIL_USERNAME }}' \
+              -e MAIL_PASSWORD='${{ secrets.MAIL_PASSWORD }}' \
+              -e AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \
+              -e AWS_SECRET_ACCESS_KEY='${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+              -e AWS_REGION='${{ secrets.AWS_REGION }}' \
+              -e S3_BUCKET='${{ secrets.S3_BUCKET }}' \
+              -e OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' \
+              -p 8080:8080 ${{ secrets.DOCKER_USER }}/passmaker-be:latest"
 
 
 
