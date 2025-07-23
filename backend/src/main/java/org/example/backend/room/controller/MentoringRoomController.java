@@ -28,5 +28,10 @@ public class MentoringRoomController {
         MentoringRoomEnterResponseDTO response = mentoringRoomService.enterRoom(roomId, request.getRoomCode(), username);
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/exit")
+    public ResponseEntity<?> exitRoom(@RequestParam Long roomId) {
+        mentoringRoomService.closeRoom(roomId); // 내부에서 summarize 호출
+        return ResponseEntity.ok("방 종료 및 요약 완료");
+    }
 }
 

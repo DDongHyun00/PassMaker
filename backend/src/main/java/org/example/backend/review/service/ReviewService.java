@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.backend.review.dto.ReviewReportDto;
 import org.example.backend.review.domain.ReviewReport;
-import org.example.backend.review.dto.ReportStatus;
+import org.example.backend.review.domain.ReportStatus;
 import org.example.backend.review.repository.ReviewReportRepository;
 import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.reservation.repository.MentoringReservationRepository;
@@ -95,7 +95,7 @@ public class ReviewService {
         reviewReportRepository.save(reviewReport);
 
         // ✅ 5. Review 엔티티의 IsReported 필드 업데이트
-        review.setIsReported(true); // IsReported 필드를 true로 설정
+        review.setReported(true); // IsReported 필드를 true로 설정
         reviewRepository.save(review); // 변경된 Review 엔티티 저장
     }
 }

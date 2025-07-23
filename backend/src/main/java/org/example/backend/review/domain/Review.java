@@ -37,5 +37,6 @@ public class Review extends BaseTimeEntity {
     private MentoringReservation reservation;
 
     @Builder.Default
-    private boolean IsReported = false;
+    @Column(name = "is_reported")
+    private boolean isReported = false;
 }

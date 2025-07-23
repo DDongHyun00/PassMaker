@@ -6,40 +6,42 @@ import org.example.backend.reservation.domain.MentoringReservation;
 import org.example.backend.room.domain.MentoringRoom;
 import org.example.backend.room.dto.MentoringRoomEnterResponseDTO;
 import org.example.backend.room.repository.MentoringRoomRepository;
+import org.example.backend.stt.service.SttService; // ✅ STT 요약 서비스 사용
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class MentoringRoomServiceImpl implements MentoringRoomService {
-    private final MentoringRoomRepository mentoringRoomRepository;
 
-    public MentoringRoom createRoomFromReservation(MentoringReservation reservation){
+    private final MentoringRoomRepository mentoringRoomRepository;
+    private final SttService sttService; // ✅ 요약 실행 위해 주입
+
+    @Override
+    public MentoringRoom createRoomFromReservation(MentoringReservation reservation) {
         LocalDateTime time = reservation.getReservationTime();
 
         MentoringRoom room = MentoringRoom.builder()
-                .mentor(reservation.getMentor())
-                .user(reservation.getUser())
-                .reservation(reservation)
-                .roomCode(generateRoomCode())
-                .startedAt(time.minusMinutes(10))
-                .endedAt(time.plusMinutes(70))
-                .build();
+            .mentor(reservation.getMentor())
+            .user(reservation.getUser())
+            .reservation(reservation)
+            .roomCode(generateRoomCode())
+            .startedAt(time.minusMinutes(10))
+            .endedAt(time.plusMinutes(70))
+            .build();
 
         return mentoringRoomRepository.save(room);
     }
 
-
-    private String generateRoomCode(){
+    private String generateRoomCode() {
         return RandomStringUtils.randomAlphanumeric(6).toUpperCase();
     }
 
-
+    @Override
     public void validateRoomEntry(String roomCode) {
         MentoringRoom room = mentoringRoomRepository.findByRoomCode(roomCode)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 방입니다."));
+            .orElseThrow(() -> new RuntimeException("존재하지 않는 방입니다."));
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -55,7 +57,7 @@ public class MentoringRoomServiceImpl implements MentoringRoomService {
     @Override
     public MentoringRoomEnterResponseDTO enterRoom(Long roomId, String inputCode, String username) {
         MentoringRoom room = mentoringRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("해당 방이 존재하지 않습니다."));
+            .orElseThrow(() -> new RuntimeException("해당 방이 존재하지 않습니다."));
 
         if (!room.getRoomCode().equals(inputCode)) {
             throw new RuntimeException("방 코드가 일치하지 않습니다.");
@@ -82,16 +84,29 @@ public class MentoringRoomServiceImpl implements MentoringRoomService {
         }
 
         return new MentoringRoomEnterResponseDTO(
-                room.getRoomId(),
-                room.getRoomCode(),
-                room.getStartedAt(),
-                room.getEndedAt(),
-                username,
-                isMentor ? "MENTOR" : "MENTEE",
-                isMentor ? menteeUsername : mentorUsername,
-                isMentor ? "MENTEE" : "MENTOR"
+            room.getRoomId(),
+            room.getRoomCode(),
+            room.getStartedAt(),
+            room.getEndedAt(),
+            username,
+            isMentor ? "MENTOR" : "MENTEE",
+            isMentor ? menteeUsername : mentorUsername,
+            isMentor ? "MENTEE" : "MENTOR"
         );
     }
 
+    @Override
+    public void closeRoom(Long roomId) {
+        MentoringRoom room = mentoringRoomRepository.findById(roomId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 방이 존재하지 않습니다."));
+
+        // (선택) 방 상태 변경 로직 예시
+        // room.setStatus(RoomStatus.CLOSED);
+
+        mentoringRoomRepository.save(room);
+
+        // ✅ STT 전체 요약 실행
+        sttService.summarize(roomId);
+    }
 
 }

@@ -1,7 +1,8 @@
-package org.example.backend.room.domain;
+package org.example.backend.stt.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.backend.room.domain.MentoringRoom;
 
 @Entity
 @Getter
@@ -21,6 +22,9 @@ public class MentoringRecord {
 
     @Lob
     private String sttText;
+
+    @Column(name = "part_index")
+    private Integer partIndex;  // STT 파트 번호 (요약이면 null)
 
     @Lob
     private String summaryText;

@@ -9,4 +9,6 @@ public interface MentoringRoomService {
     MentoringRoom createRoomFromReservation(MentoringReservation reservation);
     void validateRoomEntry(String roomCode);
     MentoringRoomEnterResponseDTO enterRoom(Long roomId, String inputCode, String username);
+    void closeRoom(Long roomId);
+
 }
