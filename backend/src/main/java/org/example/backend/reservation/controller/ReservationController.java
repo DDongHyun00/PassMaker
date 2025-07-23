@@ -92,6 +92,7 @@ public class ReservationController {
     return ResponseEntity.ok(reservations);
   }
 
+
   @GetMapping("/mentor/{mentorId}/unavailable-times")
   public ResponseEntity<List<String>> getUnavailableTimes(@PathVariable Long mentorId) {
     List<String> unavailableTimes = mentoringReservationRepository.findById(mentorId)
