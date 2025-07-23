@@ -59,7 +59,10 @@ public class MentoringRoomServiceImpl implements MentoringRoomService {
         MentoringRoom room = mentoringRoomRepository.findById(roomId)
             .orElseThrow(() -> new RuntimeException("해당 방이 존재하지 않습니다."));
 
-        if (!room.getRoomCode().equals(inputCode)) {
+//        if (!room.getRoomCode().equals(inputCode)) {
+//            throw new RuntimeException("방 코드가 일치하지 않습니다.");
+//        }
+        if (inputCode != null && !room.getRoomCode().equals(inputCode)) {
             throw new RuntimeException("방 코드가 일치하지 않습니다.");
         }
 
