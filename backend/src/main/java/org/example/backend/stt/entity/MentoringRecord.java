@@ -1,8 +1,10 @@
+// src/main/java/org/example/backend/stt/entity/MentoringRecord.java
 package org.example.backend.stt.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.backend.room.domain.MentoringRoom;
+import org.example.backend.common.BaseTimeEntity;
 
 @Entity
 @Getter
@@ -10,13 +12,14 @@ import org.example.backend.room.domain.MentoringRoom;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MentoringRecord {
+public class MentoringRecord extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // ▶ 1:N 관계로 변경: 한 방(room)에 여러 STT 레코드 저장 가능
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private MentoringRoom room;
 
