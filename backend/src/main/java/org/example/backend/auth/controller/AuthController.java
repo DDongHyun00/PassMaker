@@ -60,7 +60,8 @@ public class AuthController {
         Long userId = userDetails.getUserId();
         String username = userDetails.getUsername(); // Spring Security 기본 제공
         boolean isMentor = userDetails.getUser().isMentor(); // User 객체에서 isMentor 정보 가져오기
-        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, isMentor));
+        String role = userDetails.getRole();
+        return ResponseEntity.ok(new UserInfoResponseDto(userId, username, isMentor,role));
     }
 
 
