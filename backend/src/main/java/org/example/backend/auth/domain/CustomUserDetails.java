@@ -27,7 +27,6 @@ public class CustomUserDetails implements UserDetails {
     // ReservationController에서 @AuthenticationPrincipal 기반으로 userId 추출을 쉽게 하기 위해 임시 작성
     // 추후 로그인 인증 흐름과 병합 시 유지 여부 검토 필요
     public Long getUserId() { return user.getId(); }
-    public String getRole() { return user.getRole().toString(); }
 
     @Override
     public String getPassword() {
