@@ -73,7 +73,7 @@
 ## 🖥️ 서비스 소개
 |   메인 화면  |  로그인  |   멘토링방   |
 |:--------:|:------:|:--------:|
-| <img width="310" alt="main page" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A9%94%EC%9D%B8%ED%8E%98%EC%9D%B4%EC%A7%801.png" /> |<img width="310" alt="로그인" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A1%9C%EA%B7%B8%EC%9D%B8%ED%8E%98%EC%9D%B4%EC%A7%80.png" /> | <img width="310" alt="멘토링방 페이지" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A9%98%ED%86%A0%EB%A7%81%EB%B0%A9%ED%8E%98%EC%9D%B4%EC%A7%801.png" />|
+| <img width="150" alt="main page" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A9%94%EC%9D%B8%ED%8E%98%EC%9D%B4%EC%A7%801.png" /> <img width="150" alt="main page" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A9%94%EC%9D%B8%ED%8E%98%EC%9D%B4%EC%A7%802.png" /> |<img width="310" alt="로그인" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A1%9C%EA%B7%B8%EC%9D%B8%ED%8E%98%EC%9D%B4%EC%A7%80.png" /> | <img width="310" alt="멘토링방 페이지" src="https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/%EB%A9%98%ED%86%A0%EB%A7%81%EB%B0%A9%ED%8E%98%EC%9D%B4%EC%A7%801.png" />|
 
 | 문의 페이지  |   결제   | 관리자 |
 |:-------:|:--------:|:------:|
