@@ -69,6 +69,39 @@
 | 📝 프로젝트 기획 문서 (Notion) | [📎 바로가기](https://super-bridge-61f.notion.site/PassMaker-21f54de8ddbb8045a8c9ea72f190cd1b?source=copy_link) |
 
 ---
+# ⚙️ 기술 스택
+
+### FE
+<div align=center> 
+  <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+  <img src="https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+  <br> 
+  <img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
+  <img src="https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"> 
+  <img src="https://img.shields.io/badge/npm-ED1C24?style=for-the-badge&logo=npm&logoColor=white">
+  <br> 
+  <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=ESLint&logoColor=white"> 
+  <img src="https://img.shields.io/badge/prettier-FF69B4?style=for-the-badge&logo=prettier&logoColor=white">
+</div>
+
+### BE
+<div align=center> <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/jpa-59666C?style=for-the-badge&logo=hibernate&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <br> <img src="https://img.shields.io/badge/jwt-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"> <img src="https://img.shields.io/badge/oauth2-EB5424?style=for-the-badge&logo=auth0&logoColor=white"> <img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=websocket&logoColor=white"> <img src="https://img.shields.io/badge/STT-FF9900?style=for-the-badge&logo=googlecloud&logoColor=white"> <br> <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"> </div>
+
+### INFRA
+
+<div align=center> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/github actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"> <br> <img src="https://img.shields.io/badge/aws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/rds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"> </div>
+
+### 공통
+<div align=center> <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"> <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white"> <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"> </div>
+
+---
+
+# 🏗️ AWS 3-Tier Architecture for PassMaker
+
+![AWS Architecture Diagram](https://github.com/DDongHyun00/PassMaker_fe/blob/dev/src/assets/final_images/infra.png)
+
+---
 
 ## 🖥️ 서비스 소개
 |   메인 화면  |  로그인  |   멘토링방   |
@@ -89,6 +122,106 @@
 | **이름** | 김동현 | 정대현 | 장유빈 | 장은수 |
 | **담당** | 팀장 | BackEnd | BackEnd | Front |
 
+
+---
+
+## 🌐 아키텍처 개요
+
+본 프로젝트는 AWS 기반 3-Tier 구조로 구성된 웹 애플리케이션입니다. 각 계층은 다음과 같이 역할이 분리되어 있습니다:
+
+Web (Frontend): 정적 콘텐츠 제공 (React, Vite, Tailwind)
+
+WAS (Backend): API 서버, 인증/인가, 비즈니스 로직 처리 (Spring Boot)
+
+DB (Database): MySQL RDS 데이터베이스
+
+---
+
+## 🧩 구성 요소 설명
+
+| 구성 요소            | 설명 |
+|----------------------|------|
+| **Public Subnet**    | Web 서버와 NAT Gateway 위치. 외부 인터넷과 직접 통신 가능 |
+| **Private Subnet**   | WAS, DB, Redis 인스턴스 위치. 외부 인터넷 접근 차단 |
+| **Web (EC2 + Nginx)**| React 기반 정적 페이지 제공 |
+| **WAS (EC2)**        | Spring Boot 기반 API 처리 및 비즈니스 로직 수행 |
+| **DB (RDS - MySQL)** | 사용자, 멘토, 예약, 리뷰, 문의 등 주요 데이터 관리 |
+| **Redis**            | 토큰 블랙리스트, 세션 관리, 캐싱 처리 등 실시간 데이터 관리 |
+| **NAT Gateway**      | Private Subnet에 위치한 WAS가 외부로 통신할 수 있도록 지원 |
+| **Internet Gateway** | Web 서버를 외부 인터넷과 연결 |
+| **VPC**              | 전체 리소스를 담고 있는 가상 네트워크 |
+
+---
+
+## 🔄 동작 흐름
+
+- 사용자가 도메인(passmaker.kro.kr) 으로 접속
+- Web 서버에서 정적 파일 서빙, 필요 시 WAS로 API 요청 전송
+- WAS(Spring Boot)는 DB와 통신하며 요청 처리
+- 외부 API 호출(OAuth, Toss, STT 등)은 NAT Gateway를 통해 인터넷 접근
+
+---
+
+## ✅ 설계 목적 및 이점
+
+- 보안 강화: WAS와 DB는 Private Subnet에 배치하여 외부 노출 최소화
+- 확장성 확보: Web / WAS / DB 계층 분리로 수평·수직 확장 용이
+- 실시간 멘토링 지원: WebRTC + WebSocket 기반 화상 멘토링 제공
+- 비용 최적화: NAT Gateway를 통해 필요한 외부 접근만 허용
+- 유지보수 용이성: 계층별로 문제 추적 및 디버깅 용이
+
+---
+
+## 📝 참고 사항
+
+- **CI/CD**: GitHub Actions 기반 자동 배포 파이프라인 적용
+- **컨테이너화**: 모든 서비스는 Docker 기반으로 실행
+- **보안**: Spring Security + JWT 인증, Refresh Token 관리, Token Blacklist 도입
+- **캐시/세션 관리**: Redis를 활용한 토큰 블랙리스트, 세션 캐싱, 실시간 데이터 처리
+
+
+---
+
+
+
+# 🚀 실행 방법
+
+## 1. 환경 변수 설정
+
+backend/src/main/resources/application-secret.properties 파일을 생성하고 다음과 같이 환경 변수를 입력합니다:
+
+```
+env
+spring.datasource.url=jdbc:mysql://{RDS_ENDPOINT}:3306/passmaker
+spring.datasource.username={RDS_USERNAME}
+spring.datasource.password={RDS_PASSWORD}
+
+jwt.secret={JWT_SECRET}
+jwt.access-token-expiration=900000
+jwt.refresh-token-expiration=604800000
+
+KAKAO_CLIENT_ID={KAKAO_CLIENT_ID}
+KAKAO_REDIRECT_URI={KAKAO_REDIRECT_URI}
+GOOGLE_CLIENT_ID={GOOGLE_CLIENT_ID}
+GOOGLE_REDIRECT_URI={GOOGLE_REDIRECT_URI}
+TOSS_SECRET_KEY={TOSS_SECRET_KEY}
+```
+
+# 🌟 주요 기능
+
+🔑 JWT + OAuth2 (카카오/구글) 기반 로그인 & 인증/인가
+
+🎥 WebRTC + WebSocket 기반 실시간 화상 멘토링
+
+📅 멘토 예약 관리 (신청, 승인, 거절, 자동 Room 생성)
+
+💳 Toss Payments API 기반 결제 처리
+
+📝 STT 기반 면접 기록 및 자동 요약
+
+💬 1:1 문의하기 / 문의내역 관리
+
+📌 마이페이지 (내 정보 수정, 예약 내역, 문의 내역, 리뷰 관리)
 
 ---
 
